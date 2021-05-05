@@ -76,13 +76,13 @@ public class CustomerService {
         CustomerEntity customerEntity = customerDao.getCustomerByContactNo(contactNumber);
         if (customerEntity == null) {
             log.info("This contact number {} is not registered",contactNumber);
-            throw new AuthenticationFailedException("ATH-001", "This contact number has not been registered!");
+            throw new AuthenticationFailedException(ATH_001.getCode(), ATH_001.getDefaultMessage());
         }
         CustomerAuthEntity customerAuthEntity=null;
         final String encryptedPassword = cryptographyProvider.encrypt(password, customerEntity.getSalt());
         if (!encryptedPassword.equals(customerEntity.getPassword())) {
             log.info("Invalid password for contact number: {}",contactNumber);
-            throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
+            throw new AuthenticationFailedException(ATH_002.getCode(), ATH_002.getDefaultMessage());
         }
         log.info("Password validation successful for contactNumber: {}",contactNumber);
         customerAuthEntity = createUserAuthToken(customerEntity, encryptedPassword);
@@ -99,10 +99,16 @@ public class CustomerService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
-        String[] bearerToken = accessToken.split(Constants.TOKEN_PREFIX);
-        if (bearerToken.length != 2) {
-            log.info("Invalid authorization token");
-            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        String[] bearerToken;
+        try {
+            bearerToken = accessToken.split(Constants.TOKEN_PREFIX);
+            if (bearerToken.length != 2) {
+                log.info("Invalid authorization token");
+                throw new AuthorizationFailedException(ATHR_001.getCode(), ATHR_001.getDefaultMessage());
+            }
+        } catch (AuthorizationFailedException e) {
+            log.error("Exception parsing token");
+            throw new AuthorizationFailedException(ATHR_001.getCode(), ATHR_001.getDefaultMessage());
         }
         CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(bearerToken[1]);
         validateCustomerAuthToken(customerAuthEntity);
@@ -211,16 +217,16 @@ public class CustomerService {
         // Throw exception if the customer is not logged in
         if (customerAuthEntity == null) {
             log.info("authorization token not found in db");
-            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+            throw new AuthorizationFailedException(ATHR_001.getCode(), ATHR_001.getDefaultMessage());
         }
         //Throw exception if the customer is already logged out
         if (customerAuthEntity.getLogoutAt() != null) {
             log.info("Customer is already signed out at: {}", customerAuthEntity.getLogoutAt());
-            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+            throw new AuthorizationFailedException(ATHR_002.getCode(), ATHR_002.getCode());
         }
         // Throw exception is the customer session has already expired
         if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
-            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+            throw new AuthorizationFailedException(ATHR_003.getCode(),ATHR_003.getDefaultMessage());
         }
         return customerAuthEntity;
     }

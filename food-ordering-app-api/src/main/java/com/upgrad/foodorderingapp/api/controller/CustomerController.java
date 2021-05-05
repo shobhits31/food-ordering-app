@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Base64;
 import java.util.UUID;
 
+import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.ATH_003;
+
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
@@ -63,7 +65,7 @@ public class CustomerController {
             contactNumber = decodedArray[0];
             password = decodedArray[1];
         } catch (Exception e) {
-            throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
+            throw new AuthenticationFailedException(ATH_003.getCode(), ATH_003.getDefaultMessage());
 
         }
 
