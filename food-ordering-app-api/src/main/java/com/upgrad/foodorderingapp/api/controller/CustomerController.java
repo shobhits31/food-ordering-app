@@ -1,9 +1,6 @@
 package com.upgrad.foodorderingapp.api.controller;
 
-import com.upgrad.foodorderingapp.api.model.LoginResponse;
-import com.upgrad.foodorderingapp.api.model.LogoutResponse;
-import com.upgrad.foodorderingapp.api.model.SignupCustomerRequest;
-import com.upgrad.foodorderingapp.api.model.SignupCustomerResponse;
+import com.upgrad.foodorderingapp.api.model.*;
 import com.upgrad.foodorderingapp.service.businness.CustomerService;
 import com.upgrad.foodorderingapp.service.common.Constants;
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
@@ -11,21 +8,19 @@ import com.upgrad.foodorderingapp.service.entity.CustomerEntity;
 import com.upgrad.foodorderingapp.service.exception.AuthenticationFailedException;
 import com.upgrad.foodorderingapp.service.exception.AuthorizationFailedException;
 import com.upgrad.foodorderingapp.service.exception.SignUpRestrictedException;
+import com.upgrad.foodorderingapp.service.exception.UpdateCustomerException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 import java.util.UUID;
 
-import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.ATH_003;
+import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
 
 @RestController
 @RequestMapping("/customer")
@@ -99,6 +94,39 @@ public class CustomerController {
     }
 
 
+    /**
+     * Update customer details if valid authorization and all mandatory fields are provided
+     *
+     * @param authorization
+     * @param updateCustomerRequest
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws UpdateCustomerException
+     */
+    @RequestMapping(method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UpdateCustomerResponse> updateCustomerDetails(@RequestHeader("authorization") final String authorization,
+                                                                        @RequestBody(required = false) final UpdateCustomerRequest updateCustomerRequest)
+            throws AuthorizationFailedException, UpdateCustomerException {
+
+        // Throw exception if first name is not present
+        if (CustomerService.isEmptyField(updateCustomerRequest.getFirstName())) {
+            throw new UpdateCustomerException(UCR_002.getCode(), UCR_002.getDefaultMessage());
+        }
+
+        CustomerEntity customerEntity = customerService.getCustomer(authorization);
+        customerEntity.setFirstName(updateCustomerRequest.getFirstName());
+        customerEntity.setLastName(updateCustomerRequest.getLastName());
+        CustomerEntity updatedCustomerEntity = customerService.updateCustomer(customerEntity);
+
+        UpdateCustomerResponse updateCustomerResponse = new UpdateCustomerResponse()
+                .id(updatedCustomerEntity.getUuid())
+                .status(Constants.UPDATE_CUSTOMER_MESSAGE)
+                .firstName(updatedCustomerEntity.getFirstName())
+                .lastName(updatedCustomerEntity.getLastName());
+
+        return new ResponseEntity<UpdateCustomerResponse>(updateCustomerResponse, HttpStatus.OK);
+    }
 
     /** map the request object to customer entity
      * @param signupUserRequest
@@ -109,5 +137,40 @@ public class CustomerController {
         customerEntity.setUuid(UUID.randomUUID().toString());
         return customerEntity;
 
+    }
+
+    /**
+     * Update password if valid authorization token and all mandatory fields are provided
+     *
+     * @param authorization
+     * @param updatePasswordRequest
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws UpdateCustomerException
+     */
+    @RequestMapping(method = RequestMethod.PUT, path = "/password",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword(@RequestHeader("authorization") final String authorization,
+                                                                         @RequestBody(required = false) final UpdatePasswordRequest updatePasswordRequest)
+            throws AuthorizationFailedException, UpdateCustomerException {
+
+        final String oldPass = updatePasswordRequest.getOldPassword();
+        final String newPass = updatePasswordRequest.getNewPassword();
+
+        // Throw exception if the old or new password is not provided
+        if (customerService.isEmptyField(oldPass)
+                || customerService.isEmptyField(newPass)) {
+            throw new UpdateCustomerException(UCR_003.getCode(), UCR_003.getDefaultMessage());
+        }
+
+        CustomerEntity customerEntity = customerService.getCustomer(authorization);
+        CustomerEntity updatedCustomerEntity = customerService.updateCustomerPassword(
+                oldPass, newPass, customerEntity);
+
+        UpdatePasswordResponse updatePasswordResponse = new UpdatePasswordResponse()
+                .id(updatedCustomerEntity.getUuid())
+                .status(Constants.UPDATE_PASSWORD_MESSAGE);
+
+        return new ResponseEntity<UpdatePasswordResponse>(updatePasswordResponse, HttpStatus.OK);
     }
 }

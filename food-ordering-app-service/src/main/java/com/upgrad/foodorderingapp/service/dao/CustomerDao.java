@@ -73,4 +73,15 @@ public class CustomerDao {
     public void updateCustomerAuth(final CustomerAuthEntity customerAuthEntity) {
         entityManager.merge(customerAuthEntity);
     }
+
+    /**
+     * Method to update CustomerEntity
+     *
+     * @param customerEntity
+     * @return
+     */
+    public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
+        CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
+        return mergedCustomerEntity;
+    }
 }

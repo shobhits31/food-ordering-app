@@ -21,7 +21,11 @@ public enum GenericErrorCode implements ErrorCode {
     ATH_003("ATH-003", "Incorrect format of decoded customer name and password"),
     ATHR_001("ATHR-001", "Customer is not Logged in."),
     ATHR_002("ATHR-002", "Customer is logged out. Log in again to access this endpoint."),
-    ATHR_003("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+    ATHR_003("ATHR-003", "Your session is expired. Log in again to access this endpoint."),
+    UCR_001("UCR-001","Weak password!"),
+    UCR_002("UCR-002","First name field should not be empty"),
+    UCR_003("UCR-003","No field should be empty"),
+    UCR_004("UCR-004","Incorrect old password!");
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 
     static {
