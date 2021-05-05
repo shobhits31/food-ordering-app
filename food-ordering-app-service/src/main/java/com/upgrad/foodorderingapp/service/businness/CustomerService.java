@@ -100,7 +100,12 @@ public class CustomerService {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
-        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(accessToken);
+        String[] bearerToken = accessToken.split(Constants.TOKEN_PREFIX);
+        if (bearerToken.length != 2) {
+            log.info("Invalid authorization token");
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(bearerToken[1]);
         validateCustomerAuthToken(customerAuthEntity);
         customerAuthEntity.setLogoutAt(ZonedDateTime.now());
         customerDao.updateCustomerAuth(customerAuthEntity);
@@ -206,7 +211,7 @@ public class CustomerService {
             AuthorizationFailedException {
         // Throw exception if the customer is not logged in
         if (customerAuthEntity == null) {
-            log.info("Invalid authorization token");
+            log.info("authorization token not found in db");
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
         }
         //Throw exception if the customer is already logged out

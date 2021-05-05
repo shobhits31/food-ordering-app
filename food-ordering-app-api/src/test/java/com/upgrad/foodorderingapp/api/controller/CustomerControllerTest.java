@@ -4,6 +4,7 @@ import com.upgrad.foodorderingapp.service.businness.CustomerService;
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerEntity;
 import com.upgrad.foodorderingapp.service.exception.AuthenticationFailedException;
+import com.upgrad.foodorderingapp.service.exception.AuthorizationFailedException;
 import com.upgrad.foodorderingapp.service.exception.SignUpRestrictedException;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -199,7 +200,8 @@ public class CustomerControllerTest {
     // ----------------------------- POST /customer/logout --------------------------------
 
     //This test case passes when you are able to logout successfully.
-   /* @Test
+    @Test
+    @Ignore
     public void shouldLogoutForValidRequest() throws Exception {
         final CustomerAuthEntity createdCustomerAuthEntity = new CustomerAuthEntity();
         final CustomerEntity customerEntity = new CustomerEntity();
@@ -219,6 +221,7 @@ public class CustomerControllerTest {
 
     //This test case passes when you have handled the exception of trying to logout without even logging in.
     @Test
+    @Ignore
     public void shouldNotLogoutWhenCustomerIsNotLoggedIn() throws Exception {
         when(mockCustomerService.logout("auth"))
                 .thenThrow(new AuthorizationFailedException("ATHR-001", "Customer is not Logged in."));
@@ -234,6 +237,7 @@ public class CustomerControllerTest {
 
     //This test case passes when you have handled the exception of trying to logout when you have already logged out.
     @Test
+    @Ignore
     public void shouldNotLogoutIfCustomerIsAlreadyLoggedOut() throws Exception {
         when(mockCustomerService.logout("auth"))
                 .thenThrow(new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint."));
@@ -249,6 +253,7 @@ public class CustomerControllerTest {
 
     //This test case passes when you have handled the exception of trying to logout while your session is already expired.
     @Test
+    @Ignore
     public void shouldNotLogoutIfSessionIsExpired() throws Exception {
         when(mockCustomerService.logout("auth"))
                 .thenThrow(new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint."));
@@ -265,7 +270,7 @@ public class CustomerControllerTest {
     // ----------------------------- PUT /customer --------------------------------
 
     //This test case passes when you are able to update customer details successfully.
-    @Test
+   /* @Test
     public void shouldUpdateCustomerDetails() throws Exception {
         final CustomerEntity customerEntity = new CustomerEntity();
         customerEntity.setFirstName("firstname");
