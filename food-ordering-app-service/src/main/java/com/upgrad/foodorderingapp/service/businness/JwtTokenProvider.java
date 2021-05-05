@@ -2,6 +2,7 @@ package com.upgrad.foodorderingapp.service.businness;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.upgrad.foodorderingapp.service.common.Constants;
 import com.upgrad.foodorderingapp.service.common.GenericErrorCode;
 import com.upgrad.foodorderingapp.service.common.UnexpectedException;
 
@@ -12,7 +13,6 @@ import java.util.UUID;
 
 
 public class JwtTokenProvider {
-    private static final String TOKEN_ISSUER = "https://FoodOrderingApp.io";
 
     private final Algorithm algorithm;
 
@@ -29,7 +29,7 @@ public class JwtTokenProvider {
         final Date issuedAt = new Date(issuedDateTime.getLong(ChronoField.INSTANT_SECONDS));
         final Date expiresAt = new Date(expiresDateTime.getLong(ChronoField.INSTANT_SECONDS));
 
-        return JWT.create().withIssuer(TOKEN_ISSUER) //
+        return JWT.create().withIssuer(Constants.TOKEN_ISSUER) //
                 .withKeyId(UUID.randomUUID().toString())
                 .withAudience(customerUuid) //
                 .withIssuedAt(issuedAt).withExpiresAt(expiresAt).sign(algorithm);

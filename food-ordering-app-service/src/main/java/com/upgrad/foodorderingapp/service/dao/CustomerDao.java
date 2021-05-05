@@ -1,11 +1,13 @@
 package com.upgrad.foodorderingapp.service.dao;
 
+import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 @Repository
@@ -22,11 +24,28 @@ public class CustomerDao {
         return customerEntity;
     }
 
-    public CustomerEntity getUserByEmail(String emailAddress) {
-        return new CustomerEntity();
+    /**
+     * Get Customer based on contact number
+     *
+     * @param contactNumber
+     * @return
+     */
+    public CustomerEntity getCustomerByContactNo(String contactNumber) {
+        try {
+            return entityManager.createNamedQuery("customerByContactNumber", CustomerEntity.class)
+                    .setParameter("contactNo", contactNumber)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
-
-    public CustomerEntity getCustomerByContact(String contactNumber) {
-        return new CustomerEntity();
+    /**
+     * Method to persist CustomerAuthEntity in the database
+     *
+     * @param customerAuth - CustomerAuthEntity to be persisted in the database
+     *
+     */
+    public void createAuthToken(CustomerAuthEntity customerAuth) {
+        entityManager.persist(customerAuth);
     }
 }

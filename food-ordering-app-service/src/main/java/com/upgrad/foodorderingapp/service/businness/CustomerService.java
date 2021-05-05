@@ -1,14 +1,22 @@
 package com.upgrad.foodorderingapp.service.businness;
 
+import com.upgrad.foodorderingapp.service.common.Constants;
 import com.upgrad.foodorderingapp.service.dao.CustomerDao;
+import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerEntity;
+import com.upgrad.foodorderingapp.service.exception.AuthenticationFailedException;
 import com.upgrad.foodorderingapp.service.exception.SignUpRestrictedException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.ZonedDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
 
@@ -34,9 +42,7 @@ public class CustomerService {
     public CustomerEntity saveCustomer(final CustomerEntity customerEntity) throws SignUpRestrictedException {
         log.debug("****** Starting signup ******");
         validateCustomerDetails(customerEntity);
-        String[] encryptedText = cryptographyProvider.encrypt(customerEntity.getPassword());
-        customerEntity.setSalt(encryptedText[0]);
-        customerEntity.setPassword(encryptedText[1]);
+        setEncryptedPassword(customerEntity);
         CustomerEntity customer = customerDao.createUser(customerEntity);
         log.debug("****** Ending signup ******");
         return customer;
@@ -45,28 +51,134 @@ public class CustomerService {
 
 
     /**
+     * Method to validate if a particular field is null or empty
+     *
+     * @param value
+     * @return
+     */
+    public boolean isEmptyField(final String value) {
+        return value == null || value.isEmpty();
+    }
+
+    /**
+     * Method to authenticate customer and generate auth-token
+     *
+     * @param contactNumber
+     * @param password
+     * @return - CustomerAuthEntity
+     * @throws AuthenticationFailedException
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerAuthEntity authenticate(String contactNumber,String password) throws AuthenticationFailedException {
+        log.debug("****** Starting authenticate ******");
+
+        CustomerEntity customerEntity = customerDao.getCustomerByContactNo(contactNumber);
+        if (customerEntity == null) {
+            log.info("This contact number {} is not registered",contactNumber);
+            throw new AuthenticationFailedException("ATH-001", "This contact number has not been registered!");
+        }
+        CustomerAuthEntity customerAuthEntity=null;
+        final String encryptedPassword = cryptographyProvider.encrypt(password, customerEntity.getSalt());
+        if (!encryptedPassword.equals(customerEntity.getPassword())) {
+            log.info("Invalid password for contact number: {}",contactNumber);
+            throw new AuthenticationFailedException("ATH-002", "Invalid Credentials");
+        }
+        log.info("Password validation successful for contactNumber: {}",contactNumber);
+        customerAuthEntity = createUserAuthToken(customerEntity, encryptedPassword);
+        log.debug("****** Ends authenticate method******");
+
+        return customerAuthEntity;
+    }
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CustomerEntity logout(String authorization) {
+        return null;
+    }
+
+    /**
      * method to validate customer data for sign-up request
      *
-     * @param customer
+     * @param customerEntity
      * @throws SignUpRestrictedException
      */
-    private void validateCustomerDetails(final CustomerEntity customer) throws
+    private void validateCustomerDetails(final CustomerEntity customerEntity) throws
             SignUpRestrictedException {
-        /*CustomerEntity customerEntity = customerDao.getCustomerByContact(customer.getContactNumber());
-        if (customerEntity != null) {
-            log.info("This contact number {} is already registered", customer.getContactNumber());
+
+        // Throw exception if the contact number is not valid
+        if (customerEntity.getContactNumber().length() > 10
+                || customerEntity.getContactNumber().length() < 10
+                || !StringUtils.isNumeric(customerEntity.getContactNumber())) {
+            throw new SignUpRestrictedException(SGUR_003.getCode(), SGUR_003.getDefaultMessage());
+        }
+
+        // Throw exception if customer contact number is already present in the database
+        CustomerEntity custEntityByPhnNum = customerDao.getCustomerByContactNo(customerEntity.getContactNumber());
+        if (custEntityByPhnNum != null) {
             throw new SignUpRestrictedException(SGUR_001.getCode(), SGUR_001.getDefaultMessage());
         }
 
-         customerEntity = customerDao.getUserByEmail(customer.getEmailAddress());
-        if (customerEntity != null) {
-            log.info("This email {} is already registered", customer.getEmailAddress());
-            throw new SignUpRestrictedException(SGUR_003.getCode(), SGUR_003.getDefaultMessage());
-        }*/
-        if (customer.getContactNumber() == null || customer.getEmailAddress() == null
-                || customer.getFirstName()==null || customer.getPassword()==null) {
+        // Throw exception if email Id pattern is not valid
+        boolean isValidEmail = isValidPattern(Constants.EMAIL_PATTERN, customerEntity.getEmailId());
+        if (!isValidEmail) {
+            throw new SignUpRestrictedException(SGUR_002.getCode(), SGUR_002.getDefaultMessage());
+        }
+
+        // Throw exception if password is weak
+        if (!isValidPattern(Constants.PASSWORD_PATTERN, customerEntity.getPassword())) {
+            throw new SignUpRestrictedException(SGUR_004.getCode(), SGUR_004.getDefaultMessage());
+        }
+
+        if (isEmptyField(customerEntity.getContactNumber())|| isEmptyField(customerEntity.getEmailId())
+                || isEmptyField(customerEntity.getFirstName()) || isEmptyField(customerEntity.getPassword())) {
             throw new SignUpRestrictedException(SGUR_005.getCode(), SGUR_005.getDefaultMessage());
         }
 
     }
+
+
+    /**
+     * Method to set encrypted password
+     *
+     * @param customerEntity
+     */
+    private void setEncryptedPassword(final CustomerEntity customerEntity) {
+        String[] encryptedText = cryptographyProvider.encrypt(customerEntity.getPassword());
+        customerEntity.setSalt(encryptedText[0]);
+        customerEntity.setPassword(encryptedText[1]);
+    }
+
+    /**
+     * Method to match a field with a requested pattern
+     *
+     * @param pattern
+     * @param field
+     * @return
+     */
+    private boolean isValidPattern(final String pattern, final String field) {
+        Pattern p = Pattern.compile(pattern);
+        Matcher matcher = p.matcher(field);
+        return matcher.matches();
+    }
+
+    /**
+     * to create an customer auth-token
+     *
+     * @param customerEntity
+     * @param secret
+     * @return
+     */
+    private CustomerAuthEntity createUserAuthToken(CustomerEntity customerEntity, String secret) {
+        JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(secret);
+        CustomerAuthEntity customerAuth = new CustomerAuthEntity();
+        customerAuth.setCustomer(customerEntity);
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime expiresAt = now.plusHours(Constants.EXPIRATION_TIME);
+        customerAuth.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
+        customerAuth.setLoginAt(now);
+        customerAuth.setExpiresAt(expiresAt);
+        customerAuth.setUuid(customerEntity.getUuid());
+        customerDao.createAuthToken(customerAuth);
+        log.debug("auth-token successfully created for contact number {}", customerEntity.getContactNumber());
+        return customerAuth;
+    }
+
 }
