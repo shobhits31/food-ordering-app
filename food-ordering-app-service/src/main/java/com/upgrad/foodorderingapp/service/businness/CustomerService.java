@@ -1,6 +1,7 @@
 package com.upgrad.foodorderingapp.service.businness;
 
 import com.upgrad.foodorderingapp.service.common.Constants;
+import com.upgrad.foodorderingapp.service.common.FoodAppUtil;
 import com.upgrad.foodorderingapp.service.dao.CustomerDao;
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerEntity;
@@ -17,8 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 import static com.upgrad.foodorderingapp.service.common.Constants.PASSWORD_PATTERN;
 import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
@@ -35,7 +35,7 @@ public class CustomerService {
     private PasswordCryptographyProvider cryptographyProvider;
 
     /**
-     * Business logic to create an user based on sign-up request details
+     * Business logic to create an customer based on sign-up request details
      *
      * @param customerEntity
      * @return
@@ -46,7 +46,7 @@ public class CustomerService {
         log.debug("****** Starting signup ******");
         validateCustomerDetails(customerEntity);
         setEncryptedPassword(customerEntity);
-        CustomerEntity customer = customerDao.createUser(customerEntity);
+        CustomerEntity customer = customerDao.createCustomer(customerEntity);
         log.debug("****** Ending signup ******");
         return customer;
 
@@ -76,7 +76,7 @@ public class CustomerService {
             throw new AuthenticationFailedException(ATH_002.getCode(), ATH_002.getDefaultMessage());
         }
         log.info("Password validation successful for contactNumber: {}", contactNumber);
-        customerAuthEntity = createUserAuthToken(customerEntity, encryptedPassword);
+        customerAuthEntity = createCustomerAuthToken(customerEntity, encryptedPassword);
         log.debug("****** Ends authenticate method******");
 
         return customerAuthEntity;
@@ -85,14 +85,13 @@ public class CustomerService {
     /**
      * Business logic to logout an already signed in customer
      *
-     * @param authorization
+     * @param accessToken
      * @return
      * @throws AuthorizationFailedException
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerAuthEntity logout(final String authorization) throws AuthorizationFailedException {
-        String[] bearerToken = getAccessToken(authorization);
-        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(bearerToken[1]);
+    public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(accessToken);
         validateCustomerAuthToken(customerAuthEntity);
         customerAuthEntity.setLogoutAt(ZonedDateTime.now());
         customerDao.updateCustomerAuth(customerAuthEntity);
@@ -127,7 +126,7 @@ public class CustomerService {
             throws UpdateCustomerException {
 
         // If new password does not match the pattern throw exception
-        if (!isValidPattern(PASSWORD_PATTERN, newPassword)) {
+        if (!FoodAppUtil.isValidPattern(PASSWORD_PATTERN, newPassword)) {
             throw new UpdateCustomerException(UCR_001.getCode(), UCR_001.getDefaultMessage());
         }
 
@@ -146,49 +145,16 @@ public class CustomerService {
 
 
     /**
-     * Method to retrieve Customer details if access token provided is valid
+     * Method to retrieve Customer details with valid access-token
      *
-     * @param authorization
+     * @param accessToken
      * @return
      * @throws AuthorizationFailedException
      */
-    public CustomerEntity getCustomer(final String authorization) throws AuthorizationFailedException {
-        String[] bearerToken = getAccessToken(authorization);
-        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(bearerToken[1]);
+    public CustomerEntity getCustomer(final String accessToken) throws AuthorizationFailedException {
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(accessToken);
         validateCustomerAuthToken(customerAuthEntity);
         return customerAuthEntity.getCustomer();
-    }
-
-    /**
-     * generate access-token from authorization header
-     *
-     * @param authorization
-     * @return
-     * @throws AuthorizationFailedException
-     */
-    public String[] getAccessToken(String authorization) throws AuthorizationFailedException {
-        String[] bearerToken;
-        try {
-            bearerToken = authorization.split(Constants.TOKEN_PREFIX);
-            if (bearerToken.length != 2) {
-                log.info("Invalid authorization token");
-                throw new AuthorizationFailedException(ATHR_001.getCode(), ATHR_001.getDefaultMessage());
-            }
-        } catch (AuthorizationFailedException e) {
-            log.error("Exception parsing token");
-            throw new AuthorizationFailedException(ATHR_001.getCode(), ATHR_001.getDefaultMessage());
-        }
-        return bearerToken;
-    }
-
-    /**
-     * Method to validate if a particular field is null or empty
-     *
-     * @param value
-     * @return
-     */
-    public static boolean isEmptyField(final String value) {
-        return value == null || value.isEmpty();
     }
 
     /**
@@ -214,18 +180,13 @@ public class CustomerService {
         }
 
         // Throw exception if email Id pattern is not valid
-        if (!isValidPattern(Constants.EMAIL_PATTERN, customerEntity.getEmailAddress())) {
+        if (!FoodAppUtil.isValidPattern(Constants.EMAIL_PATTERN, customerEntity.getEmailAddress())) {
             throw new SignUpRestrictedException(SGUR_002.getCode(), SGUR_002.getDefaultMessage());
         }
 
         // Throw exception if password is weak
-        if (!isValidPattern(PASSWORD_PATTERN, customerEntity.getPassword())) {
+        if (!FoodAppUtil.isValidPattern(PASSWORD_PATTERN, customerEntity.getPassword())) {
             throw new SignUpRestrictedException(SGUR_004.getCode(), SGUR_004.getDefaultMessage());
-        }
-
-        if (isEmptyField(customerEntity.getContactNumber()) || isEmptyField(customerEntity.getEmailAddress())
-                || isEmptyField(customerEntity.getFirstName()) || isEmptyField(customerEntity.getPassword())) {
-            throw new SignUpRestrictedException(SGUR_005.getCode(), SGUR_005.getDefaultMessage());
         }
 
     }
@@ -243,26 +204,13 @@ public class CustomerService {
     }
 
     /**
-     * Method to match a field with a requested pattern
-     *
-     * @param pattern
-     * @param field
-     * @return
-     */
-    private boolean isValidPattern(final String pattern, final String field) {
-        Pattern p = Pattern.compile(pattern);
-        Matcher matcher = p.matcher(field);
-        return matcher.matches();
-    }
-
-    /**
      * to create an customer auth-token
      *
      * @param customerEntity
      * @param secret
      * @return
      */
-    private CustomerAuthEntity createUserAuthToken(CustomerEntity customerEntity, String secret) {
+    private CustomerAuthEntity createCustomerAuthToken(CustomerEntity customerEntity, String secret) {
         JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(secret);
         CustomerAuthEntity customerAuth = new CustomerAuthEntity();
         customerAuth.setCustomer(customerEntity);
@@ -271,14 +219,14 @@ public class CustomerService {
         customerAuth.setAccessToken(jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiresAt));
         customerAuth.setLoginAt(now);
         customerAuth.setExpiresAt(expiresAt);
-        customerAuth.setUuid(customerEntity.getUuid());
+        customerAuth.setUuid(UUID.randomUUID().toString());
         customerDao.createAuthToken(customerAuth);
         log.debug("auth-token successfully created for contact number {}", customerEntity.getContactNumber());
         return customerAuth;
     }
 
     /**
-     * To fetch user auth-token details
+     * To fetch customer auth-token details
      *
      * @param customerAuthEntity
      * @return
@@ -294,7 +242,7 @@ public class CustomerService {
         //Throw exception if the customer is already logged out
         if (customerAuthEntity.getLogoutAt() != null) {
             log.info("Customer is already signed out at: {}", customerAuthEntity.getLogoutAt());
-            throw new AuthorizationFailedException(ATHR_002.getCode(), ATHR_002.getCode());
+            throw new AuthorizationFailedException(ATHR_002.getCode(), ATHR_002.getDefaultMessage());
         }
         // Throw exception is the customer session has already expired
         if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {

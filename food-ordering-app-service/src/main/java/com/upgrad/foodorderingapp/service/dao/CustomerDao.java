@@ -17,7 +17,7 @@ public class CustomerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public CustomerEntity createUser(CustomerEntity customerEntity) {
+    public CustomerEntity createCustomer(CustomerEntity customerEntity) {
         log.info("create a new customer in the database");
         entityManager.persist(customerEntity);
         log.info("customer successfully created");
