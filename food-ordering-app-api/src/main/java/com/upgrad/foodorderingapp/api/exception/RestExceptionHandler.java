@@ -12,12 +12,9 @@ import org.springframework.web.context.request.WebRequest;
 public class RestExceptionHandler {
 
         /**
-         * Method to handle SignUpRestrictedException if the customer already exists in the database
-         * with the given contact number during signup, or does not pass the validations
-         *
          * @param exp     - SignUpRestrictedException
          * @param request - WebRequest
-         * @return - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(SignUpRestrictedException.class)
         public ResponseEntity<ErrorResponse> signUpRestrictionException(
@@ -27,12 +24,9 @@ public class RestExceptionHandler {
         }
 
         /**
-         * Method to handle AuthenticationFailedException if invalid credentials are provided during login,
-         * or does not pass the validations
-         *
          * @param exp     - AuthenticationFailedException
          * @param request - WebRequest
-         * @return - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(AuthenticationFailedException.class)
         public ResponseEntity<ErrorResponse> authenticationFailedException(
@@ -42,11 +36,10 @@ public class RestExceptionHandler {
         }
 
         /**
-         * Method to handle AuthorizationFailedException if invalid/ expired authorization token is provided during logout,
          *
-         * @param exp     - AuthorizationFailedException
-         * @param request - WebRequest
-         * @return - ResponseEntity (ErrorResponse along with Http status code
+         * @param exp
+         * @param request
+         * @return
          */
         @ExceptionHandler(AuthorizationFailedException.class)
         public ResponseEntity<ErrorResponse> authorizationFailedException(
@@ -56,11 +49,10 @@ public class RestExceptionHandler {
         }
 
         /**
-         * Method to handle UpdateCustomerException if any mandatory fields in updated customer object is not present
          *
          * @param exp     - UpdateCustomerException
          * @param request - WebRequest
-         * @return - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(UpdateCustomerException.class)
         public ResponseEntity<ErrorResponse> updateCustomerException(
@@ -70,11 +62,9 @@ public class RestExceptionHandler {
         }
 
         /**
-         * Method to handle SaveAddressException if any mandatory fields address object is not present
-         *
          * @param exp     - SaveAddressException
          * @param request - WebRequest
-         * @return - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(SaveAddressException.class)
         public ResponseEntity<ErrorResponse> saveAddressException(
@@ -84,11 +74,9 @@ public class RestExceptionHandler {
         }
 
         /**
-         * Method to handle AddressNotFoundException if any mandatory fields address object is not present
-         *
          * @param exp     - AddressNotFoundException
          * @param request - WebRequest
-         * @return - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(AddressNotFoundException.class)
         public ResponseEntity<ErrorResponse> addressNotFoundException(
@@ -98,11 +86,9 @@ public class RestExceptionHandler {
         }
 
         /**
-         * Method to handle CouponNotFoundException if user does not exist in the database
-         *
          * @param excp      - CouponNotFoundException
          * @param request   - WebRequest
-         * @return          - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(CouponNotFoundException.class)
         public ResponseEntity<ErrorResponse> couponNotFoundException(
@@ -111,11 +97,9 @@ public class RestExceptionHandler {
                     .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
         }
         /**
-         * Method to handle CategoryNotFoundException if user does not exist in the database
-         *
          * @param excp      - CategoryNotFoundException
          * @param request   - WebRequest
-         * @return          - ResponseEntity (ErrorResponse along with Http status code
+         * @return
          */
         @ExceptionHandler(CategoryNotFoundException.class)
         public ResponseEntity<ErrorResponse> categoryNotFoundException(

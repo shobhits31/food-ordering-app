@@ -72,7 +72,7 @@ public class CustomerController {
         LoginResponse loginResponse = new LoginResponse().id(authEntity.getUuid()).message(Constants.LOGIN_MESSAGE)
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
-                .emailAddress(customer.getEmailId())
+                .emailAddress(customer.getEmailAddress())
                 .contactNumber(customer.getContactNumber());
 
         HttpHeaders headers = new HttpHeaders();
@@ -89,7 +89,8 @@ public class CustomerController {
     @RequestMapping(method = RequestMethod.POST, path = "/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LogoutResponse> signout(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
 
-        final CustomerEntity customerEntity = customerService.logout(authorization);
+        final CustomerAuthEntity customerAuthEntity = customerService.logout(authorization);
+        final CustomerEntity customerEntity = customerAuthEntity.getCustomer();
 
         LogoutResponse logoutResponse = new LogoutResponse().id(customerEntity.getUuid()).message(Constants.LOGOUT_MESSAGE);
         return new ResponseEntity<LogoutResponse>(logoutResponse, HttpStatus.OK);

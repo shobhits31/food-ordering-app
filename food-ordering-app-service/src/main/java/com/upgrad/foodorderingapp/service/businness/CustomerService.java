@@ -5,6 +5,7 @@ import com.upgrad.foodorderingapp.service.dao.CustomerDao;
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerEntity;
 import com.upgrad.foodorderingapp.service.exception.AuthenticationFailedException;
+import com.upgrad.foodorderingapp.service.exception.AuthorizationFailedException;
 import com.upgrad.foodorderingapp.service.exception.SignUpRestrictedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import sun.plugin.cache.CacheUpdateHelper;
 
 import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
@@ -89,9 +91,21 @@ public class CustomerService {
 
         return customerAuthEntity;
     }
+    /**
+     * Business logic to logout an already signed in customer
+     *
+     * @param accessToken
+     * @return
+     * @throws AuthorizationFailedException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public CustomerEntity logout(String authorization) {
-        return null;
+    public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
+        CustomerAuthEntity customerAuthEntity = customerDao.getCustomerAuthEntity(accessToken);
+        validateCustomerAuthToken(customerAuthEntity);
+        customerAuthEntity.setLogoutAt(ZonedDateTime.now());
+        customerDao.updateCustomerAuth(customerAuthEntity);
+
+        return customerAuthEntity;
     }
 
     /**
@@ -117,7 +131,7 @@ public class CustomerService {
         }
 
         // Throw exception if email Id pattern is not valid
-        boolean isValidEmail = isValidPattern(Constants.EMAIL_PATTERN, customerEntity.getEmailId());
+        boolean isValidEmail = isValidPattern(Constants.EMAIL_PATTERN, customerEntity.getEmailAddress());
         if (!isValidEmail) {
             throw new SignUpRestrictedException(SGUR_002.getCode(), SGUR_002.getDefaultMessage());
         }
@@ -127,7 +141,7 @@ public class CustomerService {
             throw new SignUpRestrictedException(SGUR_004.getCode(), SGUR_004.getDefaultMessage());
         }
 
-        if (isEmptyField(customerEntity.getContactNumber())|| isEmptyField(customerEntity.getEmailId())
+        if (isEmptyField(customerEntity.getContactNumber())|| isEmptyField(customerEntity.getEmailAddress())
                 || isEmptyField(customerEntity.getFirstName()) || isEmptyField(customerEntity.getPassword())) {
             throw new SignUpRestrictedException(SGUR_005.getCode(), SGUR_005.getDefaultMessage());
         }
@@ -179,6 +193,32 @@ public class CustomerService {
         customerDao.createAuthToken(customerAuth);
         log.debug("auth-token successfully created for contact number {}", customerEntity.getContactNumber());
         return customerAuth;
+    }
+
+    /**
+     * To fetch user auth-token details
+     *
+     * @param customerAuthEntity
+     * @return
+     * @throws AuthorizationFailedException
+     */
+    private CustomerAuthEntity validateCustomerAuthToken(final CustomerAuthEntity customerAuthEntity) throws
+            AuthorizationFailedException {
+        // Throw exception if the customer is not logged in
+        if (customerAuthEntity == null) {
+            log.info("Invalid authorization token");
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+        //Throw exception if the customer is already logged out
+        if (customerAuthEntity.getLogoutAt() != null) {
+            log.info("Customer is already signed out at: {}", customerAuthEntity.getLogoutAt());
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }
+        // Throw exception is the customer session has already expired
+        if (customerAuthEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException("ATHR-003", "Your session is expired. Log in again to access this endpoint.");
+        }
+        return customerAuthEntity;
     }
 
 }

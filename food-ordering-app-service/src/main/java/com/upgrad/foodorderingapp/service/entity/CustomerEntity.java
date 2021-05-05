@@ -39,7 +39,7 @@ public class CustomerEntity implements Serializable {
     @Column(name = "EMAIL")
     @NotNull
     @Size(max = 50)
-    private String emailId;
+    private String emailAddress;
 
     @Column(name = "CONTACT_NUMBER")
     @Size(max = 50)
@@ -89,12 +89,12 @@ public class CustomerEntity implements Serializable {
         this.lastName = lastName;
     }
 
-    public String getEmailId() {
-        return emailId;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public void setEmailId(String emailId) {
-        this.emailId = emailId;
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public String getPassword() {

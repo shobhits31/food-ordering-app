@@ -12,7 +12,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-
+@Entity
+@Table(name = "customer_auth")
+@NamedQueries(
+        {
+                @NamedQuery(name = "customerAuthByAccessToken",
+                        query = "select ca from CustomerAuthEntity ca where ca.accessToken = :accessToken ")
+        }
+)
 public class CustomerAuthEntity implements Serializable {
 
     @Id
