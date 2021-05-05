@@ -1,14 +1,15 @@
 package com.upgrad.foodorderingapp.service.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "category_item")
 @NamedQueries(
         {
-                @NamedQuery(name = "getAllCategoryItems",
-                        query = "select ct from CategoryItemEntity ct")
+                @NamedQuery(name = "getAllCategoryItems", query = "select ct from CategoryItemEntity ct"),
+                @NamedQuery(name = "getAllCategoryItemsByUuid", query = "select ct from CategoryItemEntity ct where ct.categoryEntity.uuid=:uuid")
         }
 )
 public class CategoryItemEntity implements Serializable {
@@ -19,9 +20,13 @@ public class CategoryItemEntity implements Serializable {
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "ITEM_ID")
+    @NotNull
     private ItemEntity itemEntity;
 
     @ManyToOne
+    @JoinColumn(name = "CATEGORY_ID")
+    @NotNull
     private CategoryEntity categoryEntity;
 
     public Integer getId() {

@@ -4,13 +4,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "category")
 @NamedQueries(
         {
-                @NamedQuery(name = "getAllCategory",
-                        query = "select ct from CategoryEntity ct")
+                @NamedQuery(name = "getAllCategory", query = "select ct from CategoryEntity ct"),
+                @NamedQuery(name="getCategoryById", query = "select ct from CategoryEntity ct where ct.uuid=:uuid")
         }
 )
 public class CategoryEntity implements Serializable {
@@ -24,10 +25,11 @@ public class CategoryEntity implements Serializable {
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "PHOTO_URL")
+
+    @Column(name = "CATEGORY_NAME")
     @NotNull
     @Size(max = 255)
-    private String photo_url;
+    private String category_name;
 
     public Integer getId() {
         return id;
@@ -45,12 +47,12 @@ public class CategoryEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public String getPhoto_url() {
-        return photo_url;
+    public String getCategory_name() {
+        return category_name;
     }
 
-    public void setPhoto_url(String photo_url) {
-        this.photo_url = photo_url;
+    public void setCategory_name(String category_name) {
+        this.category_name = category_name;
     }
 
 

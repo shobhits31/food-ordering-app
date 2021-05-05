@@ -1,6 +1,7 @@
 package com.upgrad.foodorderingapp.service.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -19,11 +20,14 @@ public class RestaurantItemEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JoinColumn(name = "ITEM_ID")
     @ManyToOne
+    @NotNull
     private ItemEntity itemEntity;
 
-
+    @JoinColumn(name = "RESTAURANT_ID")
     @ManyToOne
+    @NotNull
     private RestaurantEntity restaurantEntity;
 
     public Integer getId() {
