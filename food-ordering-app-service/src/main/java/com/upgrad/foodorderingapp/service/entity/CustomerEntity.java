@@ -6,8 +6,15 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+
 @Entity
 @Table(name = "customer")
+@NamedQueries(
+        {
+                @NamedQuery(name = "customerByContactNumber",
+                        query = "select c from CustomerEntity c where c.contactNumber = :contactNo"),
+        }
+)
 public class CustomerEntity implements Serializable {
 
     @Id
@@ -48,6 +55,7 @@ public class CustomerEntity implements Serializable {
     @Size(max = 200)
     @ToStringExclude
     private String salt;
+
 
     public Integer getId() {
         return id;
