@@ -7,8 +7,10 @@ public class Constants {
     public static final String LOGIN_MESSAGE = "LOGGED IN SUCCESSFULLY";
     public static final String LOGOUT_MESSAGE = "LOGGED OUT SUCCESSFULLY";
     public static final String CUSTOMER_REGISTRATION_MESSAGE = "CUSTOMER SUCCESSFULLY REGISTERED";
-    public static final String CUSTOMER_USER_MESSAGE = "CUSTOMER SUCCESSFULLY DELETED";
+    public static final String DELETE_CUSTOMER_MESSAGE = "CUSTOMER SUCCESSFULLY DELETED";
+    public static final String UPDATE_CUSTOMER_MESSAGE = "CUSTOMER DETAILS UPDATED SUCCESSFULLY";
+    public static final String UPDATE_PASSWORD_MESSAGE = "CUSTOMER PASSWORD UPDATED SUCCESSFULLY";
     public static final String EMAIL_PATTERN = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$";
     public static final String PASSWORD_PATTERN = "^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#@$%&*!^]).{8,}$";
-    public static final String TOKEN_PREFIX = "bearer ";
+    public static final String TOKEN_PREFIX = "Bearer ";
 }
