@@ -17,7 +17,8 @@ public enum GenericErrorCode implements ErrorCode {
     SGUR_004("SGR-004", "Weak password!"),
     SGUR_005("SGR-005", "Except last name all fields should be filled"),
     CNF_001("CNF-001","Category id field should not be empty"),
-    CNF_002("CNF-002","No category by this id");
+    CNF_002("CNF-002","No category by this id"),
+    RNF_001("RNF-001","No restaurant by this id");
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 
     static {

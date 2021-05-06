@@ -25,16 +25,6 @@ public class CategoryDao {
         return categoryEntityList;
     }
 
-    public CategoryEntity getCategoryById(final String categoryId){
-        log.info("getting all categories from the database");
-        try {
-            CategoryEntity categoryEntity = entityManager.createNamedQuery("getCategoryById",CategoryEntity.class).setParameter("uuid",categoryId)
-                    .getSingleResult();
-            return categoryEntity;
-        }catch (NoResultException nre){
-            return null;
-        }
-    }
 
     public List<CategoryItemEntity> getAllCategoryItems(final String categoryId){
         List<CategoryItemEntity> categoryItemEntity = entityManager.createNamedQuery("getAllCategoryItemsByUuid",CategoryItemEntity.class).setParameter("uuid",categoryId)
