@@ -29,7 +29,7 @@ public class AddressEntity implements Serializable {
     private String uuid;
 
     @Column(name = "FLAT_BUIL_NUMBER")
-    private String flatBuildingNo;
+    private String flatBuildNo;
 
     @Column(name = "LOCALITY")
     private String locality;
@@ -70,11 +70,11 @@ public class AddressEntity implements Serializable {
     }
 
     public String getFlatBuildingName() {
-        return flatBuildingNo;
+        return flatBuildNo;
     }
 
-    public void setFlatBuildingNo(String flatBuildNo) {
-        this.flatBuildingNo = flatBuildNo;
+    public void setFlatBuilNo(String flatBuildNo) {
+        this.flatBuildNo = flatBuildNo;
     }
 
     public String getLocality() {
@@ -136,7 +136,7 @@ public class AddressEntity implements Serializable {
         return new EqualsBuilder()
                 .append(id, that.id)
                 .append(uuid, that.uuid)
-                .append(flatBuildingNo, that.flatBuildingNo)
+                .append(flatBuildNo, that.flatBuildNo)
                 .append(locality, that.locality)
                 .append(city, that.city)
                 .append(pincode, that.pincode)
@@ -150,7 +150,7 @@ public class AddressEntity implements Serializable {
         return new HashCodeBuilder(17, 37)
                 .append(id)
                 .append(uuid)
-                .append(flatBuildingNo)
+                .append(flatBuildNo)
                 .append(locality)
                 .append(city)
                 .append(pincode)
@@ -164,7 +164,7 @@ public class AddressEntity implements Serializable {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("uuid", uuid)
-                .append("flatBuildNum", flatBuildingNo)
+                .append("flatBuildNo", flatBuildNo)
                 .append("locality", locality)
                 .append("city", city)
                 .append("pincode", pincode)

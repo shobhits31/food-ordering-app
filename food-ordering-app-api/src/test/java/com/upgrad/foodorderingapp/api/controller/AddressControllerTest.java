@@ -320,7 +320,7 @@ public class AddressControllerTest {
         addressEntity.setPincode("100000");
         addressEntity.setCity("city");
         addressEntity.setLocality("locality");
-        addressEntity.setFlatBuildingNo("flatBuildNo");
+        addressEntity.setFlatBuilNo("flatBuildNo");
         final String stateUuid = UUID.randomUUID().toString();
         addressEntity.setState(new StateEntity(stateUuid, "state"));
         when(mockAddressService.getAllAddress(customerEntity)).thenReturn(Collections.singletonList(addressEntity));
