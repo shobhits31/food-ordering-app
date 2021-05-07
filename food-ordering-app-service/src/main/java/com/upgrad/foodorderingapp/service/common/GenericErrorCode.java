@@ -25,7 +25,10 @@ public enum GenericErrorCode implements ErrorCode {
     UCR_001("UCR-001","Weak password!"),
     UCR_002("UCR-002","First name field should not be empty"),
     UCR_003("UCR-003","No field should be empty"),
-    UCR_004("UCR-004","Incorrect old password!");
+    UCR_004("UCR-004","Incorrect old password!"),
+    CNF_001("CNF-001","Category id field should not be empty"),
+    CNF_002("CNF-002","No category by this id");
+
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 
     static {

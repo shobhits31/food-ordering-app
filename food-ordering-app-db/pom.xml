@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>food-ordering-app</artifactId>
-        <groupId>FoodOrderingApp-Backend</groupId>
+        <groupId>com.upgrad.foodorderingapp</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -71,7 +71,7 @@
                     <dependency>
                         <groupId>org.postgresql</groupId>
                         <artifactId>postgresql</artifactId>
-                        <version>42.2.2.jre7</version>
+                        <version>42.2.2</version>
                         <scope>runtime</scope>
                     </dependency>
 
