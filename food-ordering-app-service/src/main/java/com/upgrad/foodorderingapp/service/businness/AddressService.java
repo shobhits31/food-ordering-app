@@ -64,7 +64,7 @@ public class AddressService {
             throw new SaveAddressException(SAR_001.getCode(), SAR_001.getDefaultMessage());
         }
         // Throw exception if the pincode is invalid
-        if (FoodAppUtil.isValidPattern(addressEntity.getPincode(), Constants.PINCODE_PATTERN)){
+        if (!FoodAppUtil.isValidPattern(Constants.PINCODE_PATTERN, addressEntity.getPincode())){
             throw new SaveAddressException(SAR_002.getCode(),SAR_002.getDefaultMessage());
         }
 
