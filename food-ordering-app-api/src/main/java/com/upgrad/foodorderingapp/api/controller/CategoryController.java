@@ -54,7 +54,7 @@ public class CategoryController {
     private List<CategoryListResponse> convertEntityToResponseList (List<CategoryEntity> categoryEntityList){
         List<CategoryListResponse> categoryResponseList=new ArrayList<CategoryListResponse>();
         for(CategoryEntity ct:categoryEntityList){
-            CategoryListResponse listResponse = new CategoryListResponse().id(UUID.fromString(ct.getUuid())).categoryName(ct.getCategory_name());
+            CategoryListResponse listResponse = new CategoryListResponse().id(UUID.fromString(ct.getUuid())).categoryName(ct.getCategoryName());
             categoryResponseList.add(listResponse);
         }
         return categoryResponseList;
@@ -63,10 +63,10 @@ public class CategoryController {
     private CategoryDetailsResponse getItemListFromCategoryItemEntity(List<CategoryItemEntity> categoryItemEntityList){
         CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse();
         categoryDetailsResponse.id(UUID.fromString(categoryItemEntityList.get(0).getCategoryEntity().getUuid()));
-        categoryDetailsResponse.categoryName(categoryItemEntityList.get(0).getCategoryEntity().getCategory_name());
+        categoryDetailsResponse.categoryName(categoryItemEntityList.get(0).getCategoryEntity().getCategoryName());
         List<ItemList> itemList = new ArrayList<ItemList>();
         for(CategoryItemEntity ct:categoryItemEntityList){
-            ItemList item = new ItemList().id(UUID.fromString(ct.getItemEntity().getUuid())).itemName(ct.getItemEntity().getItem_name())
+            ItemList item = new ItemList().id(UUID.fromString(ct.getItemEntity().getUuid())).itemName(ct.getItemEntity().getItemName())
                     .price(ct.getItemEntity().getPrice()).itemType(ct.getItemEntity().getType().equals("0")?ItemList.ItemTypeEnum.VEG:ItemList.ItemTypeEnum.NON_VEG);
             itemList.add(item);
         }
