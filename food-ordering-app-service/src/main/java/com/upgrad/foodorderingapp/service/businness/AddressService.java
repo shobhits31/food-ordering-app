@@ -11,7 +11,6 @@ import com.upgrad.foodorderingapp.service.entity.StateEntity;
 import com.upgrad.foodorderingapp.service.exception.AddressNotFoundException;
 import com.upgrad.foodorderingapp.service.exception.AuthorizationFailedException;
 import com.upgrad.foodorderingapp.service.exception.SaveAddressException;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

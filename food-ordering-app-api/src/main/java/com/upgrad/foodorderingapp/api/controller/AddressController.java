@@ -158,26 +158,6 @@ public class AddressController {
     }
 
     /**
-     * Method to set all AddressEntity field into AddressList
-     *
-     * @param addressEntity
-     * @return
-     */
-    private AddressList setAddressList(AddressEntity addressEntity) {
-        AddressList addressList = new AddressList();
-        addressList.setId(UUID.fromString(addressEntity.getUuid()));
-        addressList.setFlatBuildingName(addressEntity.getFlatBuildingName());
-        addressList.setLocality(addressEntity.getLocality());
-        addressList.setCity(addressEntity.getCity());
-        addressList.setPincode(addressEntity.getPincode());
-        AddressListState addressListState = new AddressListState();
-        addressListState.id(UUID.fromString(addressEntity.getState().getUuid()))
-                .stateName(addressEntity.getState().getStateName());
-        addressList.setState(addressListState);
-        return addressList;
-    }
-
-    /**
      * map the request object to address entity
      *
      * @param saveAddressRequest

@@ -9,8 +9,6 @@ import javax.persistence.PersistenceContext;
 import java.util.Collections;
 import java.util.List;
 
-//This Class is created to access DB with respect to State Entity
-
 @Repository
 public class StateDao {
 
