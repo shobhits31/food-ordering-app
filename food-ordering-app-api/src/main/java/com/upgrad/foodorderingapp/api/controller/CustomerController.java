@@ -25,6 +25,7 @@ import static com.upgrad.foodorderingapp.service.common.FoodAppUtil.getAccessTok
 import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/customer")
 public class CustomerController {
     @Autowired

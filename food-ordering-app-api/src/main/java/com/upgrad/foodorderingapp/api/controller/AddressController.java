@@ -26,6 +26,7 @@ import java.util.UUID;
 import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.ANF_005;
 
 @RestController
+@CrossOrigin
 public class AddressController {
 
     @Autowired
