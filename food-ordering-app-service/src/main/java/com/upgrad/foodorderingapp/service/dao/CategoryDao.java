@@ -3,6 +3,7 @@ package com.upgrad.foodorderingapp.service.dao;
 import com.upgrad.foodorderingapp.service.entity.CategoryEntity;
 import com.upgrad.foodorderingapp.service.entity.CategoryItemEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
+import com.upgrad.foodorderingapp.service.entity.RestaurantCategoryEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -30,5 +31,11 @@ public class CategoryDao {
         List<CategoryItemEntity> categoryItemEntity = entityManager.createNamedQuery("getAllCategoryItemsByUuid",CategoryItemEntity.class).setParameter("uuid",categoryId)
                     .getResultList();
         return categoryItemEntity;
+    }
+
+    public List<RestaurantCategoryEntity> getAllCategoriesByRestaurant(final String restaurantId){
+        List<RestaurantCategoryEntity> restaurantCategoryEntities = entityManager.createNamedQuery("getAllCategoryItemsByRestaurantuuid", RestaurantCategoryEntity.class).setParameter("uuid",restaurantId)
+                .getResultList();
+        return restaurantCategoryEntities;
     }
 }

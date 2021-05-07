@@ -1,6 +1,9 @@
 package com.upgrad.foodorderingapp.service.entity;
 
+import com.upgrad.foodorderingapp.service.common.ItemType;
+
 import javax.persistence.*;
+import javax.print.attribute.standard.MediaSize;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -11,6 +14,7 @@ import java.io.Serializable;
         {
                 @NamedQuery(name = "getAllItems",
                         query = "select it from ItemEntity it")
+
         }
 )
 public class ItemEntity implements Serializable {
@@ -27,7 +31,7 @@ public class ItemEntity implements Serializable {
     @Column(name = "ITEM_NAME")
     @NotNull
     @Size(max = 30)
-    private String item_name;
+    private String itemname;
 
     @Column(name = "PRICE")
     @NotNull
@@ -36,7 +40,7 @@ public class ItemEntity implements Serializable {
     @Column(name = "TYPE")
     @NotNull
     @Size(max = 10)
-    private String type;
+    private ItemType type;
 
     public Integer getId() {
         return id;
@@ -54,12 +58,12 @@ public class ItemEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public String getItem_name() {
-        return item_name;
+    public String getItemName() {
+        return itemname;
     }
 
-    public void setItem_name(String item_name) {
-        this.item_name = item_name;
+    public void setItemName(String item_name) {
+        this.itemname = item_name;
     }
 
     public Integer getPrice() {
@@ -70,11 +74,11 @@ public class ItemEntity implements Serializable {
         this.price = price;
     }
 
-    public String getType() {
+    public ItemType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ItemType ItemType) {
         this.type = type;
     }
 

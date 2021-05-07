@@ -3,6 +3,8 @@ import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
 import com.upgrad.foodorderingapp.service.dao.CategoryDao;
 import com.upgrad.foodorderingapp.service.dao.ItemDao;
 import com.upgrad.foodorderingapp.service.entity.CategoryItemEntity;
+import com.upgrad.foodorderingapp.service.entity.ItemEntity;
+import com.upgrad.foodorderingapp.service.entity.RestaurantEntity;
 import com.upgrad.foodorderingapp.service.entity.RestaurantItemEntity;
 import com.upgrad.foodorderingapp.service.exception.RestaurantNotFoundException;
 import org.slf4j.Logger;
@@ -19,6 +21,9 @@ public class ItemService {
 
     @Autowired
     private ItemDao itemDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     public List<RestaurantItemEntity> getAllRestaurantItemEntity(final String restaurantId) throws RestaurantNotFoundException{
         List<RestaurantItemEntity> restaurantItemEntities = itemDao.getItemForRestaurantUUID(restaurantId);
@@ -56,6 +61,22 @@ public class ItemService {
             counter++;
         }
         return finalList;
+    }
+
+    public List<ItemEntity> getItemsByCategoryAndRestaurant(final String restaurantID,final String categoryId){
+        List<RestaurantItemEntity> restaurantItemEntities = itemDao.getItemForRestaurantUUID(restaurantID);
+        List<CategoryItemEntity> categoryItemEntities = categoryDao.getAllCategoryItems(categoryId);
+        List<ItemEntity> itemEntityList = new ArrayList<ItemEntity>();
+        for(CategoryItemEntity ct:categoryItemEntities){
+            boolean found=false;
+            for(RestaurantItemEntity rt:restaurantItemEntities){
+                if(rt.getItemEntity().getUuid().equals(ct.getItemEntity().getUuid()))
+                    found=true;
+            }
+            if(found)
+                itemEntityList.add(ct.getItemEntity());
+        }
+        return itemEntityList;
     }
 
 }

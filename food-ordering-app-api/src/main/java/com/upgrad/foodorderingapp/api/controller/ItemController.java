@@ -30,7 +30,7 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    @RequestMapping(method = RequestMethod.GET,path = "/{restaurant_id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET,path = "/",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<ItemQuantityResponseItem>> getAllRestaurants(final String restaurant_id) throws RestaurantNotFoundException {
         List<RestaurantItemEntity> restaurantItemEntities = itemService.getAllRestaurantItemEntity(restaurant_id);
         List<ItemQuantityResponseItem> itemQuantityResponseItems = getItemListFromRestaurantItemEntity(restaurantItemEntities);
@@ -41,7 +41,7 @@ public class ItemController {
         List<ItemQuantityResponseItem> itemQuantityResponseItems = new ArrayList<ItemQuantityResponseItem>();
         for(RestaurantItemEntity restaurantItemEntity:restaurantItemEntities){
             ItemQuantityResponseItem it=new ItemQuantityResponseItem().id(UUID.fromString(restaurantItemEntity.getItemEntity().getUuid()))
-                    .itemName(restaurantItemEntity.getItemEntity().getItem_name()).itemPrice(restaurantItemEntity.getItemEntity().getPrice())
+                    .itemName(restaurantItemEntity.getItemEntity().getItemName()).itemPrice(restaurantItemEntity.getItemEntity().getPrice())
                     .type(restaurantItemEntity.getItemEntity().getType().equals("0")? ItemQuantityResponseItem.TypeEnum.VEG:ItemQuantityResponseItem.TypeEnum.NON_VEG);
             itemQuantityResponseItems.add(it);
         }
