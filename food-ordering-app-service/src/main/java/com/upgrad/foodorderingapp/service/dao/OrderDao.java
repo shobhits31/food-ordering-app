@@ -1,6 +1,8 @@
 package com.upgrad.foodorderingapp.service.dao;
 
 import com.upgrad.foodorderingapp.service.entity.CouponEntity;
+import com.upgrad.foodorderingapp.service.entity.OrderEntity;
+import com.upgrad.foodorderingapp.service.entity.OrderItemEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -14,6 +16,12 @@ public class OrderDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Fetch coupon detail based on coupon name
+     *
+     * @param couponName coupon name received in path variable
+     * @return coupon details
+     */
     public CouponEntity getCouponByCouponName(String couponName) {
         try {
             List<CouponEntity> couponEntityList = entityManager.createNamedQuery("couponByCouponName", CouponEntity.class).setParameter("couponName", couponName).getResultList();
@@ -27,5 +35,25 @@ public class OrderDao {
         catch(NoResultException nre) {
             return null;
         }
+    }
+
+    /**
+     * Retrieves past order details ordered by date in descending order
+     *
+     * @param customerUUID customer UUID of logged in user
+     * @return list of past orders
+     */
+    public List<OrderEntity> getPastOrders(String customerUUID) {
+        return entityManager.createNamedQuery("getPastOrders", OrderEntity.class).setParameter("customerUUID", customerUUID).getResultList();
+    }
+
+    /**
+     * Retrieves all items related to a particular order
+     *
+     * @param orderId order id for which items to be fetched
+     * @return List of order items
+     */
+    public List<OrderItemEntity> getOrderItemByOrderId(Integer orderId) {
+        return entityManager.createNamedQuery("itemsByOrderId", OrderItemEntity.class).setParameter("id", orderId).getResultList();
     }
 }

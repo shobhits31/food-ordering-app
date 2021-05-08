@@ -11,6 +11,9 @@ import java.util.Date;
 
 @Entity
 @Table(name="orders")
+@NamedQueries({
+        @NamedQuery(name = "getPastOrders", query = "select o from OrderEntity o where o.customerId.uuid = :customerUUID order by o.date desc")
+})
 public class OrderEntity {
 
     @Id
