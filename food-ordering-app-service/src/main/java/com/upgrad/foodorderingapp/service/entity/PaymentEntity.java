@@ -6,6 +6,9 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "payment")
+@NamedQueries({
+        @NamedQuery(name = "allPaymentMethods", query = "select p from PaymentEntity p")
+})
 public class PaymentEntity {
 
     @Id
