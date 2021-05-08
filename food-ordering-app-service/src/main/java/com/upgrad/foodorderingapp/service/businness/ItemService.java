@@ -6,6 +6,7 @@ import com.upgrad.foodorderingapp.service.entity.CategoryItemEntity;
 import com.upgrad.foodorderingapp.service.entity.ItemEntity;
 import com.upgrad.foodorderingapp.service.entity.RestaurantEntity;
 import com.upgrad.foodorderingapp.service.entity.RestaurantItemEntity;
+import com.upgrad.foodorderingapp.service.exception.ItemNotFoundException;
 import com.upgrad.foodorderingapp.service.exception.RestaurantNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,14 @@ public class ItemService {
                 itemEntityList.add(ct.getItemEntity());
         }
         return itemEntityList;
+    }
+
+    public ItemEntity getItemByUUID(String itemUuid) throws ItemNotFoundException {
+        ItemEntity itemEntity = itemDao.getItemByUUID(itemUuid);
+        if(itemEntity == null){
+            throw new ItemNotFoundException(INF_003.getCode(), INF_003.getDefaultMessage());
+        }
+        return itemEntity;
     }
 
 }

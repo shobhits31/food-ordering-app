@@ -22,6 +22,7 @@ public enum GenericErrorCode implements ErrorCode {
     ATHR_001("ATHR-001", "Customer is not Logged in."),
     ATHR_002("ATHR-002", "Customer is logged out. Log in again to access this endpoint."),
     ATHR_003("ATHR-003", "Your session is expired. Log in again to access this endpoint."),
+    ATHR_004("ATHR-004", "You are not authorized to view/update/delete any one else's address"),
     UCR_001("UCR-001","Weak password!"),
     UCR_002("UCR-002","First name field should not be empty"),
     UCR_003("UCR-003","No field should be empty"),
@@ -39,7 +40,8 @@ public enum GenericErrorCode implements ErrorCode {
     RNF_003("RNF-003","Restaurant name field should not be empty"),
     CPF_001("CPF-001", "No coupon by this name"),
     CPF_002("CPF-002", "Coupon name field should not be empty"),
-    PNF_002("PNF-002", "No payment method found by this id");
+    PNF_002("PNF-002", "No payment method found by this id"),
+    INF_003("INF-003", "No item by this id exist");
 
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 

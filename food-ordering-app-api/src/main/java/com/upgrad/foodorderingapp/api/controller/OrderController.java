@@ -1,8 +1,7 @@
 package com.upgrad.foodorderingapp.api.controller;
 
 import com.upgrad.foodorderingapp.api.model.*;
-import com.upgrad.foodorderingapp.service.businness.CustomerService;
-import com.upgrad.foodorderingapp.service.businness.OrderService;
+import com.upgrad.foodorderingapp.service.businness.*;
 import com.upgrad.foodorderingapp.service.common.FoodAppUtil;
 import com.upgrad.foodorderingapp.service.entity.*;
 import com.upgrad.foodorderingapp.service.exception.*;
@@ -20,6 +19,7 @@ import java.util.UUID;
 import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
 
 @RestController
+@CrossOrigin
 public class OrderController {
 
     @Autowired
@@ -27,6 +27,15 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private AddressService addressService;
+
+    @Autowired
+    private RestaurantService restaurantService;
+
+    @Autowired
+    private ItemService itemService;
 
     /**
      * Validate customer session and retrieve coupon based on coupon name
@@ -88,8 +97,7 @@ public class OrderController {
                 address.id(UUID.fromString(pastOrder.getAddressId().toString())).flatBuildingName(pastOrder.getAddressId().toString()).locality(pastOrder.getAddressId().toString()).pincode(pastOrder.getAddressId().toString());
 
                 OrderListAddressState addressState = new OrderListAddressState();
-//                StateEntity stateEntity =
-                addressState.id(UUID.fromString(pastOrder.getAddressId().toString())).stateName(pastOrder.getAddressId().toString());
+                addressState.id(UUID.fromString(pastOrder.getAddressId().getState().getUuid())).stateName(pastOrder.getAddressId().getState().getStateName());
                 address.state(addressState);
                 orderList.address(address);
 
@@ -100,10 +108,7 @@ public class OrderController {
                         ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse();
                         itemQuantityResponse.quantity(orderItem.getQuantity()).price(orderItem.getPrice());
                         ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem();
-                        itemQuantityResponseItem.id(UUID.fromString(orderItem.getItemId().getUuid()))
-                                .itemName(orderItem.getItemId().getItem_name()).itemPrice(orderItem.getPrice())
-                                .type(ItemQuantityResponseItem.TypeEnum
-                                        .fromValue(orderItem.getItemId().getType()));
+                        itemQuantityResponseItem.id(UUID.fromString(orderItem.getItemId().getUuid())).itemName(orderItem.getItemId().getItemName()).itemPrice(orderItem.getPrice());
                         itemQuantityResponse.item(itemQuantityResponseItem);
                         orderList.addItemQuantitiesItem(itemQuantityResponse);
                     });
@@ -155,15 +160,14 @@ public class OrderController {
         }
 
         if(saveOrderRequest.getAddressId() != null) {
-            //to be updated
-            //one more exception handling to be done ANF_004
+            address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
         }
         else {
             throw new AddressNotFoundException(ANF_003.getCode(), ANF_003.getDefaultMessage());
         }
 
         if(saveOrderRequest.getRestaurantId() != null) {
-            //to be updated
+            restaurant = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
         }
         else {
             throw new RestaurantNotFoundException(RNF_001.getCode(), RNF_001.getDefaultMessage());
@@ -182,7 +186,7 @@ public class OrderController {
         List<ItemQuantity> itemQuantities = saveOrderRequest.getItemQuantities();
         if(itemQuantities != null && !itemQuantities.isEmpty()) {
             for(ItemQuantity itemQuantity: itemQuantities) {
-                ItemEntity item = null; //to be updated
+                ItemEntity item = itemService.getItemByUUID(itemQuantity.getItemId().toString());
                 OrderItemEntity orderItem = new OrderItemEntity();
                 orderItem.setItemId(item);
                 orderItem.setOrderId(saveOrder);

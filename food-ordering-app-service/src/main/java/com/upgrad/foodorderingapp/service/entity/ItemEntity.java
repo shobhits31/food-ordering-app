@@ -14,7 +14,8 @@ import java.util.List;
 @NamedQueries(
         {
                 @NamedQuery(name = "getAllItems",
-                        query = "select it from ItemEntity it")
+                        query = "select it from ItemEntity it"),
+                @NamedQuery(name = "itemByUUID", query = "select q from ItemEntity q where q.uuid = :uuid")
 
         }
 )
