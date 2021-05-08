@@ -7,6 +7,7 @@ import javax.print.attribute.standard.MediaSize;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "item")
@@ -41,6 +42,10 @@ public class ItemEntity implements Serializable {
     @NotNull
     @Size(max = 10)
     private ItemType type;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "category_item", joinColumns = @JoinColumn(name = "ITEM_ID"), inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID"))
+    private List<CategoryEntity> categories;
 
     public Integer getId() {
         return id;
@@ -78,7 +83,7 @@ public class ItemEntity implements Serializable {
         return type;
     }
 
-    public void setType(ItemType ItemType) {
+    public void setType(ItemType type) {
         this.type = type;
     }
 

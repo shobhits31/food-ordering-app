@@ -25,16 +25,21 @@ public class ItemService {
     @Autowired
     private CategoryDao categoryDao;
 
-    public List<RestaurantItemEntity> getAllRestaurantItemEntity(final String restaurantId) throws RestaurantNotFoundException{
-        List<RestaurantItemEntity> restaurantItemEntities = itemDao.getItemForRestaurantUUID(restaurantId);
+    public List<ItemEntity> getItemsByPopularity(final RestaurantEntity restaurantEntity) throws RestaurantNotFoundException{
+        List<RestaurantItemEntity> restaurantItemEntities = itemDao.getItemForRestaurantUUID(restaurantEntity.getUuid());
         if(restaurantItemEntities.size()<1){
             throw new RestaurantNotFoundException(RNF_001.getCode(), RNF_001.getDefaultMessage());
         }
-        restaurantItemEntities=getItemsByPopularity(restaurantItemEntities);
-        return restaurantItemEntities;
+        restaurantItemEntities=getTop5(restaurantItemEntities);
+        List<ItemEntity> itemEntityList = new ArrayList<ItemEntity>();
+        for(RestaurantItemEntity rt:restaurantItemEntities){
+            itemEntityList.add(rt.getItemEntity());
+        }
+
+        return itemEntityList;
     }
 
-    public  List<RestaurantItemEntity> getItemsByPopularity(List<RestaurantItemEntity> restaurantItemEntities){
+    private   List<RestaurantItemEntity> getTop5(List<RestaurantItemEntity> restaurantItemEntities){
         HashMap<Integer,Integer> hmap= new HashMap<Integer,Integer>();
         for(RestaurantItemEntity rt:restaurantItemEntities){
             if(hmap.containsKey(rt.getItemEntity().getId())){

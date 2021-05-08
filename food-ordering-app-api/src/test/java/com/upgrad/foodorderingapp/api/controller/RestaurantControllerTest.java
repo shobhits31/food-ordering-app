@@ -61,7 +61,7 @@ public class RestaurantControllerTest {
 
     //This test case passes when you get restaurant details based on restaurant id.
 
-/* @Test
+  @Test
     public void shouldGetRestaurantDetailsForCorrectRestaurantId() throws Exception {
         final RestaurantEntity restaurantEntity = getRestaurantEntity();
         when(mockRestaurantService.restaurantByUUID("someRestaurantId"))
@@ -86,7 +86,7 @@ public class RestaurantControllerTest {
         verify(mockCategoryService, times(1)).getCategoriesByRestaurant("someRestaurantId");
         verify(mockItemService, times(1))
                 .getItemsByCategoryAndRestaurant("someRestaurantId", categoryEntity.getUuid());
-    }*/
+    }
 
     //This test case passes when you have handled the exception of trying to fetch any restaurant but your restaurant id
     // field is empty.
@@ -162,7 +162,7 @@ public class RestaurantControllerTest {
         verify(mockRestaurantService, times(1)).restaurantsByName(anyString());
     }
 
-/*
+
     // ------------------------------------------ GET /restaurant/category/{category_id} ------------------------------------------
 
     //This test case passes when you are able to retrieve restaurant belonging to any particular categories.
@@ -224,7 +224,7 @@ public class RestaurantControllerTest {
 
     // ------------------------------------------ GET /restaurant ------------------------------------------
 
- */   //This test case passes when you able to fetch the list of all restaurants.
+    //This test case passes when you able to fetch the list of all restaurants.
     @Test
     public void shouldGetAllRestaurantDetails() throws Exception {
         final RestaurantEntity restaurantEntity = getRestaurantEntity();
