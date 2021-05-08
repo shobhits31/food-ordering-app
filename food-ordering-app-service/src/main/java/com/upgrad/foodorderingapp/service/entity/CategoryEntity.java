@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NamedQueries(
         {
                 @NamedQuery(name = "getAllCategory", query = "select ct from CategoryEntity ct"),
-                @NamedQuery(name="getCategoryById", query = "select ct from CategoryEntity ct where ct.uuid=:uuid"),
+                @NamedQuery(name="getCategoryUsingUuid", query = "select ct from CategoryEntity ct where ct.uuid=:uuid"),
 
         }
 )
@@ -36,6 +37,10 @@ public class CategoryEntity implements Serializable{
     @NotNull
     @Size(max = 255)
     private String categoryName;
+
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
+    private List<ItemEntity> items;
 
     public Integer getId() {
         return id;
@@ -75,4 +80,13 @@ public class CategoryEntity implements Serializable{
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
+
+    public List<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
+    }
+
 }

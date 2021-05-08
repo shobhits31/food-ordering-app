@@ -23,24 +23,32 @@ public class CategoryService {
     private CategoryDao categoryDao;
 
 
-    public List<CategoryEntity> getAllCategories(){
-        log.info("******Start get all categories*******");
-        List<CategoryEntity> categoryEntityList= categoryDao.getAllCategories();
-        log.info("******End get all categories*******");
-        return categoryEntityList;
+    /**
+     * Get  all categories
+     *
+     * @return - list of CategoryEntity
+     */
+    public List<CategoryEntity> getAllCategoriesOrderedByName() {
+        List<CategoryEntity> allCategory = categoryDao.getAllCategoriesOrderedByName();
+        return allCategory;
     }
+    /**
+     * Get  category details using category uuid
+     *
+     * @param categoryUuid - String represents category uuid
+     * @return - category details using category uuid
+     */
+    public CategoryEntity getCategoryById(String categoryUuid) throws CategoryNotFoundException {
+        if (categoryUuid==null || categoryUuid=="") {
+            throw new CategoryNotFoundException("CNF-001", "Category id field should not be empty");
+        }
+        CategoryEntity categoryEntity = categoryDao.getCategoryById(categoryUuid);
 
-    public List<CategoryItemEntity> getCategoryById(final String categoryId) throws CategoryNotFoundException{
-        log.info("******Start categories by category Id*******");
-        if(categoryId==null || categoryId.equals("")){
-            throw new CategoryNotFoundException(CNF_001.getCode(), CNF_001.getDefaultMessage());
+        if (categoryEntity == null) {
+            throw new CategoryNotFoundException("CNF-002", "No category by this id");
         }
-        List<CategoryItemEntity> categoryEntity = categoryDao.getAllCategoryItems(categoryId);
-        if(categoryEntity.size()<1){
-            throw new CategoryNotFoundException(CNF_002.getCode(), CNF_002.getDefaultMessage());
-        }
-        log.info("******End categories by category Id*******");
         return categoryEntity;
+
     }
 
     public List<CategoryEntity> getCategoriesByRestaurant(final String restaurantId){

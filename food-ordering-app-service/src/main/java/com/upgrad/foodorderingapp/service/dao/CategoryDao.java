@@ -20,7 +20,7 @@ public class CategoryDao {
     private EntityManager entityManager;
 
 
-    public List<CategoryEntity> getAllCategories(){
+    public List<CategoryEntity> getAllCategoriesOrderedByName(){
         log.info("getting all categories from the database");
         List<CategoryEntity> categoryEntityList = entityManager.createNamedQuery("getAllCategory").getResultList();
         return categoryEntityList;
@@ -37,5 +37,21 @@ public class CategoryDao {
         List<RestaurantCategoryEntity> restaurantCategoryEntities = entityManager.createNamedQuery("getAllCategoryItemsByRestaurantuuid", RestaurantCategoryEntity.class).setParameter("uuid",restaurantId)
                 .getResultList();
         return restaurantCategoryEntities;
+    }
+
+    /**
+     * Get  category details using category uuid
+     *
+     * @param categoryUuid - String represents category uuid
+     * @return - category details using category uuid
+     */
+    public CategoryEntity getCategoryById(String categoryUuid) {
+        try {
+            return entityManager.createNamedQuery("getCategoryUsingUuid", CategoryEntity.class)
+                    .setParameter("uuid", categoryUuid)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 }

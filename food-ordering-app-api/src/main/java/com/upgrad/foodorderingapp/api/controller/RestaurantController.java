@@ -5,10 +5,7 @@ import com.upgrad.foodorderingapp.service.businness.CategoryService;
 import com.upgrad.foodorderingapp.service.businness.ItemService;
 import com.upgrad.foodorderingapp.service.businness.RestaurantService;
 import com.upgrad.foodorderingapp.service.common.ItemType;
-import com.upgrad.foodorderingapp.service.entity.CategoryEntity;
-import com.upgrad.foodorderingapp.service.entity.CategoryItemEntity;
-import com.upgrad.foodorderingapp.service.entity.ItemEntity;
-import com.upgrad.foodorderingapp.service.entity.RestaurantEntity;
+import com.upgrad.foodorderingapp.service.entity.*;
 import com.upgrad.foodorderingapp.service.exception.CategoryNotFoundException;
 import com.upgrad.foodorderingapp.service.exception.RestaurantNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -53,10 +50,41 @@ public class RestaurantController {
         return new ResponseEntity<RestaurantListResponse>(restaurantListResponse, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RestaurantListResponse> restaurantByUUID( @PathVariable String category_id) throws CategoryNotFoundException {
+        List<RestaurantEntity> restaurantEntities = restaurantService.restaurantByCategory(category_id);
+        RestaurantListResponse restaurantListResponse = getRestaurantCategoryDetails(restaurantEntities);
+        return new ResponseEntity<RestaurantListResponse>(restaurantListResponse, HttpStatus.OK);
+    }
+
+
     @RequestMapping(method = RequestMethod.GET,path = "/{restaurant_id}",produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantsId(@PathVariable final String restaurant_id) throws RestaurantNotFoundException,CategoryNotFoundException {
         RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(restaurant_id);
-        RestaurantDetailsResponse restaurantDetailsResponse= getRestaurantCategoryAndItemDetails(restaurantEntity);
+        RestaurantDetailsResponse restaurantDetailsResponse = modelMapper.map(restaurantEntity,RestaurantDetailsResponse.class);
+        restaurantDetailsResponse.setId(UUID.fromString(restaurantEntity.getUuid()));
+        restaurantDetailsResponse.getAddress().setId(UUID.fromString(restaurantEntity.getAddress().getUuid()));
+        restaurantDetailsResponse.getAddress().getState().setId(UUID.fromString(restaurantEntity.getAddress().getState().getUuid()));
+        restaurantDetailsResponse.setAveragePrice(restaurantEntity.getAvgPrice());
+        List<CategoryList> categoryLists = new ArrayList<>();
+        List<CategoryEntity> categoryEntities = categoryService.getCategoriesByRestaurant(restaurant_id);
+
+        for(CategoryEntity categoryEntity: categoryEntities){
+            CategoryList categoryList = new CategoryList();
+            categoryList.setId(UUID.fromString(categoryEntity.getUuid()));
+            categoryList.setCategoryName(categoryEntity.getCategoryName());
+            List<ItemEntity> itemEntities = itemService.getItemsByCategoryAndRestaurant(restaurant_id,categoryEntity.getUuid());
+
+            List<ItemList> itemLists = new ArrayList<>();
+            for(ItemEntity itemEntity: itemEntities){
+                itemLists.add(setItemList(itemEntity));
+            }
+            categoryList.setItemList(itemLists);
+            categoryLists.add(categoryList);
+        }
+
+        restaurantDetailsResponse.setCategories(categoryLists);
+
         return new ResponseEntity<RestaurantDetailsResponse>(restaurantDetailsResponse, HttpStatus.OK);
     }
 
@@ -92,30 +120,14 @@ public class RestaurantController {
         return restaurantListResponse;
     }
 
-    private RestaurantDetailsResponse getRestaurantCategoryAndItemDetails(RestaurantEntity restaurantEntities) throws CategoryNotFoundException{
-        List<CategoryEntity> categoryItemEntities=categoryService.getCategoriesByRestaurant(restaurantEntities.getUuid());
-        RestaurantDetailsResponse restaurantDetailsResponse = modelMapper.map(restaurantEntities,RestaurantDetailsResponse.class);
-        restaurantDetailsResponse.setId(UUID.fromString(restaurantEntities.getUuid()));
-        restaurantDetailsResponse.getAddress().setId(UUID.fromString(restaurantEntities.getAddress().getUuid()));
-        restaurantDetailsResponse.getAddress().getState().setId(UUID.fromString(restaurantEntities.getAddress().getState().getUuid()));
-        restaurantDetailsResponse.setAveragePrice(restaurantEntities.getAvgPrice());
-        List<CategoryList> categoryList = new ArrayList<CategoryList>();
-        for(CategoryEntity ct:categoryItemEntities){
-            List<ItemEntity> itemLists = itemService.getItemsByCategoryAndRestaurant(restaurantEntities.getUuid(), ct.getUuid());
-            List<ItemList> itemsList = new ArrayList<ItemList>();
-            for(ItemEntity it:itemLists){
-                ItemList itemList = new ItemList().itemName(it.getItemName()).price(it.getPrice()).id(UUID.fromString(it.getUuid())).itemType(it.getType().ordinal()==0?ItemList.ItemTypeEnum.VEG:ItemList.ItemTypeEnum.NON_VEG);
-                itemsList.add(itemList);
-            }
-            CategoryList category= new CategoryList();
-            category.setCategoryName(ct.getCategoryName());
-            category.setId(UUID.fromString(ct.getUuid()));
-            category.setItemList(itemsList);
-            categoryList.add(category);
-        }
-
-        restaurantDetailsResponse.setCategories(categoryList);
-        return restaurantDetailsResponse;
+    private ItemList setItemList(ItemEntity itemEntity) {
+        ItemList itemList = new ItemList();
+        itemList.setId(UUID.fromString(itemEntity.getUuid()));
+        itemList.setItemName(itemEntity.getItemName());
+        itemList.setPrice(itemEntity.getPrice());
+        String itemType = itemEntity.getType()!=null && itemEntity.getType().ordinal()==0? ItemType.VEG.name():ItemType.NON_VEG.name();
+        itemList.setItemType(ItemList.ItemTypeEnum.fromValue(itemType));
+        return itemList;
     }
 
 }

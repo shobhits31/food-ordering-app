@@ -1,6 +1,7 @@
 package com.upgrad.foodorderingapp.service.dao;
 
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
+import com.upgrad.foodorderingapp.service.entity.RestaurantCategoryEntity;
 import com.upgrad.foodorderingapp.service.entity.RestaurantEntity;
 import com.upgrad.foodorderingapp.service.entity.RestaurantItemEntity;
 import org.slf4j.Logger;
@@ -35,4 +36,18 @@ public class RestaurantDao {
             return null;
         }
     }
+
+    /**
+     * Method to get all restaurants category entity using category uuid
+     *
+     * @param categoryUuid - String representing Category UUID
+     * @return - list of get all restaurants category entity using category uuid
+     */
+    public List<RestaurantCategoryEntity> restaurantsByCategoryId(final String categoryUuid) {
+        return entityManager.createNamedQuery("getRestaurantsByCategory", RestaurantCategoryEntity.class)
+                .setParameter("categoryUuid", categoryUuid)
+                .getResultList();
+    }
+
+
 }

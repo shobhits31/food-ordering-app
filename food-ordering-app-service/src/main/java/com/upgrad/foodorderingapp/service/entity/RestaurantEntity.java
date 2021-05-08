@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "restaurant")
@@ -51,10 +52,19 @@ public class RestaurantEntity implements Serializable {
     @NotNull
     private Integer numberOfCustomersRated;
 
+
+
     @JoinColumn(name = "ADDRESS_ID")
     @ManyToOne
     @NotNull
     private AddressEntity address;
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "restaurant_category",
+            joinColumns = @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "id", nullable = false))
+    private List<CategoryEntity> categories;
 
     public Integer getId() {
         return id;
@@ -119,4 +129,26 @@ public class RestaurantEntity implements Serializable {
     public void setAddress(AddressEntity addressId) {
         this.address = addressId;
     }
+
+    @Override
+    public String toString() {
+        return "RestaurantEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", restaurantName='" + restaurantName + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", customerRating=" + customerRating +
+                ", averagePrice=" + averagePrice +
+                ", numberOfCustomersRated=" + numberOfCustomersRated +
+                ", address=" + address +
+                '}';
+    }
+    public List<CategoryEntity> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<CategoryEntity> categories) {
+        this.categories = categories;
+    }
+
 }
