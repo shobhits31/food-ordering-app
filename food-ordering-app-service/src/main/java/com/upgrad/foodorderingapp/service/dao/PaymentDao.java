@@ -27,4 +27,19 @@ public class PaymentDao {
             return null;
         }
     }
+
+    /**
+     * Retrieve payment method based on ID from database
+     *
+     * @param uuid payment uuid
+     * @return returns payment details
+     */
+    public PaymentEntity getPaymentByUUID(final String uuid){
+        try{
+            return entityManager.createNamedQuery("paymentByUUID", PaymentEntity.class).setParameter("paymentUUID", uuid).getSingleResult();
+        }
+        catch(NoResultException nre){
+            return null;
+        }
+    }
 }

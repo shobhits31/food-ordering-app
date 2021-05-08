@@ -37,6 +37,9 @@ public class OrderController {
     @Autowired
     private ItemService itemService;
 
+    @Autowired
+    private PaymentService paymentService;
+
     /**
      * Validate customer session and retrieve coupon based on coupon name
      * Exception handling for logged out or not logged in or session expired and for coupon not available
@@ -153,7 +156,7 @@ public class OrderController {
         }
 
         if(saveOrderRequest.getPaymentId() != null) {
-            // to be updated
+            payment = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
         }
         else {
             throw new PaymentMethodNotFoundException(PNF_002.getCode(), PNF_002.getDefaultMessage());
