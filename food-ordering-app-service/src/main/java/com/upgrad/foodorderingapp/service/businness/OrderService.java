@@ -8,8 +8,12 @@ import com.upgrad.foodorderingapp.service.entity.OrderItemEntity;
 import com.upgrad.foodorderingapp.service.exception.CouponNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static com.upgrad.foodorderingapp.service.common.GenericErrorCode.*;
 
@@ -57,5 +61,46 @@ public class OrderService {
      */
     public List<OrderItemEntity> getOrderItemByOrderId(Integer orderId) {
         return orderDao.getOrderItemByOrderId(orderId);
+    }
+
+    /**
+     * Store order in the database
+     *
+     * @param order order information to be saved in database
+     * @return order details saved in database
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OrderEntity saveOrderDetails(OrderEntity order) {
+        order.setUuid(UUID.randomUUID().toString());
+        order.setDate(new Date());
+        orderDao.saveOrderDetails(order);
+        return order;
+    }
+
+    /**
+     * Retrieves coupon details based on coupon id
+     *
+     * @param couponUUID coupon uuid for which coupon details to be fetched
+     * @return coupon details
+     * @throws CouponNotFoundException No coupon by this id
+     */
+    public CouponEntity getCouponById(String couponUUID) throws CouponNotFoundException {
+        CouponEntity coupon = orderDao.getCouponById(couponUUID);
+        if (coupon == null) {
+            throw new CouponNotFoundException(CPF_002.getCode(), CPF_002.getDefaultMessage());
+        }
+        return coupon;
+    }
+
+    /**
+     * Store order item information in the database
+     *
+     * @param orderItemEntity order item details to be saved
+     * @return order item details
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OrderItemEntity saveOrderItem(OrderItemEntity orderItemEntity) {
+        orderDao.saveOrderItem(orderItemEntity);
+        return orderItemEntity;
     }
 }

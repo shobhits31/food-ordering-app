@@ -29,7 +29,10 @@ public enum GenericErrorCode implements ErrorCode {
     CNF_001("CNF-001","Category id field should not be empty"),
     CNF_002("CNF-002","No category by this id"),
     CPF_001("CPF-001", "No coupon by this name"),
-    CPF_002("CPF-002", "Coupon name field should not be empty");
+    CPF_002("CPF-002", "Coupon name field should not be empty"),
+    PNF_002("PNF-002", "No payment method found by this id"),
+    ANF_003("ANF-003", "No address by this id"),
+    RNF_001("RNF-001", "No restaurant by this id");
 
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 

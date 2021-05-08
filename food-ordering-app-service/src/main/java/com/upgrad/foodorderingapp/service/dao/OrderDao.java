@@ -4,6 +4,8 @@ import com.upgrad.foodorderingapp.service.entity.CouponEntity;
 import com.upgrad.foodorderingapp.service.entity.OrderEntity;
 import com.upgrad.foodorderingapp.service.entity.OrderItemEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -55,5 +57,42 @@ public class OrderDao {
      */
     public List<OrderItemEntity> getOrderItemByOrderId(Integer orderId) {
         return entityManager.createNamedQuery("itemsByOrderId", OrderItemEntity.class).setParameter("id", orderId).getResultList();
+    }
+
+    /**
+     * Store order information in database
+     *
+     * @param order order information added by customer
+     * @return return order details
+     */
+    public OrderEntity saveOrderDetails(OrderEntity order) {
+        entityManager.persist(order);
+        return order;
+    }
+
+    /**
+     * Retrieves coupon based on coupon UUID
+     *
+     * @param couponUUID coupon UUID to be retrieved
+     * @return coupon details
+     */
+    public CouponEntity getCouponById(String couponUUID) {
+        try {
+            return entityManager.createNamedQuery("getCouponByUUID", CouponEntity.class).setParameter("couponUUID", couponUUID).getSingleResult();
+        }
+        catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    /**
+     * Stores order item information in database
+     *
+     * @param orderItemEntity order item details to be saved
+     * @return order item details saved
+     */
+    public OrderItemEntity saveOrderItem(OrderItemEntity orderItemEntity) {
+        entityManager.persist(orderItemEntity);
+        return orderItemEntity;
     }
 }
