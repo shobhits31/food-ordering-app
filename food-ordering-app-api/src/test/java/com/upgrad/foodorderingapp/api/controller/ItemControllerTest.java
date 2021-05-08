@@ -1,4 +1,6 @@
-/*
+
+
+
 package com.upgrad.foodorderingapp.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +10,7 @@ import com.upgrad.foodorderingapp.service.businness.RestaurantService;
 import com.upgrad.foodorderingapp.service.entity.ItemEntity;
 import com.upgrad.foodorderingapp.service.entity.RestaurantEntity;
 import com.upgrad.foodorderingapp.service.exception.RestaurantNotFoundException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static com.upgrad.foodorderingapp.service.common.ItemType.NON_VEG;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,4 +84,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("code").value("RNF-001"));
     }
 
-}*/
+}
+
+
+

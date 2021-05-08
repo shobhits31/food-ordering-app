@@ -3,6 +3,7 @@ package com.upgrad.foodorderingapp.service.dao;
 import com.upgrad.foodorderingapp.service.entity.CategoryEntity;
 import com.upgrad.foodorderingapp.service.entity.CategoryItemEntity;
 import com.upgrad.foodorderingapp.service.entity.CustomerAuthEntity;
+import com.upgrad.foodorderingapp.service.entity.RestaurantCategoryEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -19,26 +20,38 @@ public class CategoryDao {
     private EntityManager entityManager;
 
 
-    public List<CategoryEntity> getAllCategories(){
+    public List<CategoryEntity> getAllCategoriesOrderedByName(){
         log.info("getting all categories from the database");
         List<CategoryEntity> categoryEntityList = entityManager.createNamedQuery("getAllCategory").getResultList();
         return categoryEntityList;
     }
 
-    public CategoryEntity getCategoryById(final String categoryId){
-        log.info("getting all categories from the database");
-        try {
-            CategoryEntity categoryEntity = entityManager.createNamedQuery("getCategoryById",CategoryEntity.class).setParameter("uuid",categoryId)
-                    .getSingleResult();
-            return categoryEntity;
-        }catch (NoResultException nre){
-            return null;
-        }
-    }
 
     public List<CategoryItemEntity> getAllCategoryItems(final String categoryId){
         List<CategoryItemEntity> categoryItemEntity = entityManager.createNamedQuery("getAllCategoryItemsByUuid",CategoryItemEntity.class).setParameter("uuid",categoryId)
                     .getResultList();
         return categoryItemEntity;
+    }
+
+    public List<RestaurantCategoryEntity> getAllCategoriesByRestaurant(final String restaurantId){
+        List<RestaurantCategoryEntity> restaurantCategoryEntities = entityManager.createNamedQuery("getAllCategoryItemsByRestaurantuuid", RestaurantCategoryEntity.class).setParameter("uuid",restaurantId)
+                .getResultList();
+        return restaurantCategoryEntities;
+    }
+
+    /**
+     * Get  category details using category uuid
+     *
+     * @param categoryUuid - String represents category uuid
+     * @return - category details using category uuid
+     */
+    public CategoryEntity getCategoryById(String categoryUuid) {
+        try {
+            return entityManager.createNamedQuery("getCategoryUsingUuid", CategoryEntity.class)
+                    .setParameter("uuid", categoryUuid)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 }

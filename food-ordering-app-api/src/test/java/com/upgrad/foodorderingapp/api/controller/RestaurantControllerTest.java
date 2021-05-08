@@ -1,4 +1,5 @@
-/*
+
+
 package com.upgrad.foodorderingapp.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +9,7 @@ import com.upgrad.foodorderingapp.service.businness.CategoryService;
 import com.upgrad.foodorderingapp.service.businness.CustomerService;
 import com.upgrad.foodorderingapp.service.businness.ItemService;
 import com.upgrad.foodorderingapp.service.businness.RestaurantService;
-import com.upgrad.foodorderingapp.service.entity.RestaurantEntity;
+import com.upgrad.foodorderingapp.service.entity.*;
 import com.upgrad.foodorderingapp.service.exception.AuthorizationFailedException;
 import com.upgrad.foodorderingapp.service.exception.CategoryNotFoundException;
 import com.upgrad.foodorderingapp.service.exception.InvalidRatingException;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static com.upgrad.foodorderingapp.service.common.ItemType.NON_VEG;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,7 +60,8 @@ public class RestaurantControllerTest {
     // ------------------------------------------ GET /restaurant/{restaurant_id} ------------------------------------------
 
     //This test case passes when you get restaurant details based on restaurant id.
-    @Test
+
+  @Test
     public void shouldGetRestaurantDetailsForCorrectRestaurantId() throws Exception {
         final RestaurantEntity restaurantEntity = getRestaurantEntity();
         when(mockRestaurantService.restaurantByUUID("someRestaurantId"))
@@ -248,7 +251,7 @@ public class RestaurantControllerTest {
         verify(mockRestaurantService, times(1)).restaurantsByRating();
         verify(mockCategoryService, times(1)).getCategoriesByRestaurant(restaurantEntity.getUuid());
     }
-
+/*
 
     // ------------------------------------------ PUT /restaurant/{restaurant_id} ------------------------------------------
 
@@ -430,7 +433,7 @@ public class RestaurantControllerTest {
     }
 
     // ------------------------------------------ POJO builders ------------------------------------------
-
+*/
     private ItemEntity getItemEntity() {
         final ItemEntity itemEntity = new ItemEntity();
         final String itemId = UUID.randomUUID().toString();
@@ -466,4 +469,5 @@ public class RestaurantControllerTest {
         restaurantEntity.setRestaurantName("Famous Restaurant");
         return restaurantEntity;
     }
-}*/
+}
+

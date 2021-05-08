@@ -10,6 +10,7 @@ import java.io.Serializable;
         {
                 @NamedQuery(name = "getAllCategoryItems", query = "select ct from CategoryItemEntity ct"),
                 @NamedQuery(name = "getAllCategoryItemsByUuid", query = "select ct from CategoryItemEntity ct where ct.categoryEntity.uuid=:uuid")
+
         }
 )
 public class CategoryItemEntity implements Serializable {
