@@ -30,6 +30,14 @@ public class CouponEntity {
     @NotNull
     private Integer percent;
 
+    public CouponEntity(){}
+
+    public CouponEntity(@NotNull @Size(max = 200) String uuid, @Size(max = 255) String couponName, @NotNull Integer percent) {
+        this.uuid = uuid;
+        this.couponName = couponName;
+        this.percent = percent;
+    }
+
     public Integer getId() {
         return id;
     }

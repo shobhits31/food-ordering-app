@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 @Table(name="orders")
 @NamedQueries({
-        @NamedQuery(name = "getPastOrders", query = "select o from OrderEntity o where o.customerId.uuid = :customerUUID order by o.date desc")
+        @NamedQuery(name = "getPastOrders", query = "select o from OrderEntity o where o.customer.uuid = :customerUUID order by o.date desc")
 })
 public class OrderEntity {
 
@@ -51,17 +51,30 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private CustomerEntity customerId;
+    private CustomerEntity customer;
 
-//    @ManyToOne
-//    @JoinColumn(name = "address_id")
-    @Transient
-    private AddressEntity addressId;
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private AddressEntity address;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private RestaurantEntity restaurantId;
+    private RestaurantEntity restaurant;
+
+    public OrderEntity() {}
+
+    public OrderEntity(@NotNull @Size(max = 200) String uuid, @NotNull Double bill, CouponEntity couponId, @NotNull Double discount, @NotNull Date date, PaymentEntity paymentId, CustomerEntity customer, AddressEntity address, RestaurantEntity restaurant) {
+        this.uuid = uuid;
+        this.bill = bill;
+        this.couponId = couponId;
+        this.discount = discount;
+        this.date = date;
+        this.paymentId = paymentId;
+        this.customer = customer;
+        this.address = address;
+        this.restaurant = restaurant;
+    }
 
     public Integer getId() {
         return id;
@@ -119,27 +132,27 @@ public class OrderEntity {
         this.paymentId = paymentId;
     }
 
-    public CustomerEntity getCustomerId() {
-        return customerId;
+    public CustomerEntity getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(CustomerEntity customerId) {
-        this.customerId = customerId;
+    public void setCustomer(CustomerEntity customer) {
+        this.customer = customer;
     }
 
-    public AddressEntity getAddressId() {
-        return addressId;
+    public AddressEntity getAddress() {
+        return address;
     }
 
-    public void setAddressId(AddressEntity addressId) {
-        this.addressId = addressId;
+    public void setAddress(AddressEntity address) {
+        this.address = address;
     }
 
-    public RestaurantEntity getRestaurantId() {
-        return restaurantId;
+    public RestaurantEntity getRestaurant() {
+        return restaurant;
     }
 
-    public void setRestaurantId(RestaurantEntity restaurantId) {
-        this.restaurantId = restaurantId;
+    public void setRestaurant(RestaurantEntity restaurant) {
+        this.restaurant = restaurant;
     }
 }

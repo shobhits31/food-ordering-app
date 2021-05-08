@@ -34,9 +34,9 @@ public class PaymentService {
      */
     public PaymentEntity getPaymentByUUID(String paymentUUID) throws PaymentMethodNotFoundException {
         PaymentEntity payment = paymentDao.getPaymentByUUID(paymentUUID);
-        if (payment != null) {
-            return payment;
+        if (payment == null) {
+            throw new PaymentMethodNotFoundException(PNF_002.getCode(), PNF_002.getDefaultMessage());
         }
-        throw new PaymentMethodNotFoundException(PNF_002.getCode(), PNF_002.getDefaultMessage());
+        return payment;
     }
 }

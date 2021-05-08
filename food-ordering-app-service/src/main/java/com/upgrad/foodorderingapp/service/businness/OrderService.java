@@ -49,7 +49,7 @@ public class OrderService {
      * @param customerUUID UUID of logged in customer
      * @return List of order details
      */
-    public List<OrderEntity> getPastOrders(String customerUUID) {
+    public List<OrderEntity> getOrdersByCustomers(String customerUUID) {
         return orderDao.getPastOrders(customerUUID);
     }
 
@@ -70,9 +70,7 @@ public class OrderService {
      * @return order details saved in database
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public OrderEntity saveOrderDetails(OrderEntity order) {
-        order.setUuid(UUID.randomUUID().toString());
-        order.setDate(new Date());
+    public OrderEntity saveOrder(OrderEntity order) {
         orderDao.saveOrderDetails(order);
         return order;
     }
@@ -84,7 +82,7 @@ public class OrderService {
      * @return coupon details
      * @throws CouponNotFoundException No coupon by this id
      */
-    public CouponEntity getCouponById(String couponUUID) throws CouponNotFoundException {
+    public CouponEntity getCouponByCouponId(String couponUUID) throws CouponNotFoundException {
         CouponEntity coupon = orderDao.getCouponById(couponUUID);
         if (coupon == null) {
             throw new CouponNotFoundException(CPF_002.getCode(), CPF_002.getDefaultMessage());

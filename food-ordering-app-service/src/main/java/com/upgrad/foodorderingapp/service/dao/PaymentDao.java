@@ -20,12 +20,7 @@ public class PaymentDao {
      * @return payment methods
      */
     public List<PaymentEntity> getAllPaymentMethods() {
-        try{
-            return this.entityManager.createNamedQuery("allPaymentMethods", PaymentEntity.class).getResultList();
-        }
-        catch(NoResultException nre){
-            return null;
-        }
+        return this.entityManager.createNamedQuery("allPaymentMethods", PaymentEntity.class).getResultList();
     }
 
     /**
@@ -34,7 +29,7 @@ public class PaymentDao {
      * @param uuid payment uuid
      * @return returns payment details
      */
-    public PaymentEntity getPaymentByUUID(final String uuid){
+    public PaymentEntity getPaymentByUUID(final String uuid) {
         try{
             return entityManager.createNamedQuery("paymentByUUID", PaymentEntity.class).setParameter("paymentUUID", uuid).getSingleResult();
         }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +75,7 @@ public class OrderController {
         String accessToken = FoodAppUtil.getAccessToken(authorization);
         CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
-        List<OrderEntity> pastOrders = orderService.getPastOrders(customerEntity.getUuid());
+        List<OrderEntity> pastOrders = orderService.getOrdersByCustomers(customerEntity.getUuid());
         CustomerOrderResponse customerOrderResponse = new CustomerOrderResponse();
         if(pastOrders != null && !pastOrders.isEmpty()) {
             pastOrders.forEach(pastOrder -> {
@@ -93,14 +94,14 @@ public class OrderController {
                 orderList.payment(payment);
 
                 OrderListCustomer customer = new OrderListCustomer();
-                customer.id(UUID.fromString(pastOrder.getCustomerId().getUuid())).firstName(pastOrder.getCustomerId().getFirstName()).lastName(pastOrder.getCustomerId().getLastName()).emailAddress(pastOrder.getCustomerId().getEmailAddress()).contactNumber(pastOrder.getCustomerId().getContactNumber());
+                customer.id(UUID.fromString(pastOrder.getCustomer().getUuid())).firstName(pastOrder.getCustomer().getFirstName()).lastName(pastOrder.getCustomer().getLastName()).emailAddress(pastOrder.getCustomer().getEmailAddress()).contactNumber(pastOrder.getCustomer().getContactNumber());
                 orderList.customer(customer);
 
                 OrderListAddress address = new OrderListAddress();
-                address.id(UUID.fromString(pastOrder.getAddressId().toString())).flatBuildingName(pastOrder.getAddressId().toString()).locality(pastOrder.getAddressId().toString()).pincode(pastOrder.getAddressId().toString());
+                address.id(UUID.fromString(pastOrder.getAddress().getUuid())).flatBuildingName(pastOrder.getAddress().toString()).locality(pastOrder.getAddress().toString()).pincode(pastOrder.getAddress().toString());
 
                 OrderListAddressState addressState = new OrderListAddressState();
-                addressState.id(UUID.fromString(pastOrder.getAddressId().getState().getUuid())).stateName(pastOrder.getAddressId().getState().getStateName());
+                addressState.id(UUID.fromString(pastOrder.getAddress().getState().getUuid())).stateName(pastOrder.getAddress().getState().getStateName());
                 address.state(addressState);
                 orderList.address(address);
 
@@ -147,57 +148,34 @@ public class OrderController {
         String accessToken = FoodAppUtil.getAccessToken(authorization);
         CustomerEntity loggedInCustomer = customerService.getCustomer(accessToken);
 
-        CouponEntity coupon = null;
-        AddressEntity address = null;
-        PaymentEntity payment = null;
-        RestaurantEntity restaurant = null;
-        if(saveOrderRequest.getCouponId() != null) {
-            coupon = orderService.getCouponById(saveOrderRequest.getCouponId().toString());
-        }
-
-        if(saveOrderRequest.getPaymentId() != null) {
-            payment = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
-        }
-        else {
-            throw new PaymentMethodNotFoundException(PNF_002.getCode(), PNF_002.getDefaultMessage());
-        }
-
-        if(saveOrderRequest.getAddressId() != null) {
-            address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
-        }
-        else {
-            throw new AddressNotFoundException(ANF_003.getCode(), ANF_003.getDefaultMessage());
-        }
-
-        if(saveOrderRequest.getRestaurantId() != null) {
-            restaurant = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
-        }
-        else {
-            throw new RestaurantNotFoundException(RNF_001.getCode(), RNF_001.getDefaultMessage());
-        }
+        CouponEntity coupon = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
+        AddressEntity address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
+        PaymentEntity payment = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
+        RestaurantEntity restaurant = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
 
         OrderEntity order = new OrderEntity();
-        order.setCustomerId(loggedInCustomer);
+        order.setUuid(UUID.randomUUID().toString());
+        order.setCustomer(loggedInCustomer);
         order.setCouponId(coupon);
-        order.setAddressId(address);
+        order.setAddress(address);
         order.setPaymentId(payment);
-        order.setRestaurantId(restaurant);
+        order.setRestaurant(restaurant);
         order.setBill(saveOrderRequest.getBill() != null ? saveOrderRequest.getBill().doubleValue() : null);
         order.setDiscount(saveOrderRequest.getDiscount() != null ? saveOrderRequest.getDiscount().doubleValue() : null);
-        final OrderEntity saveOrder = orderService.saveOrderDetails(order);
+        order.setDate(new Date());
+        final OrderEntity saveOrder = orderService.saveOrder(order);
 
         List<ItemQuantity> itemQuantities = saveOrderRequest.getItemQuantities();
-        if(itemQuantities != null && !itemQuantities.isEmpty()) {
-            for(ItemQuantity itemQuantity: itemQuantities) {
-                ItemEntity item = itemService.getItemByUUID(itemQuantity.getItemId().toString());
-                OrderItemEntity orderItem = new OrderItemEntity();
-                orderItem.setItemId(item);
-                orderItem.setOrderId(saveOrder);
-                orderItem.setQuantity(itemQuantity.getQuantity());
-                orderItem.setPrice(itemQuantity.getPrice());
-                orderService.saveOrderItem(orderItem);
-            }
+        for(ItemQuantity itemQuantity: itemQuantities) {
+            ItemEntity item = itemService.getItemByUUID(itemQuantity.getItemId().toString());
+            OrderItemEntity orderItem = new OrderItemEntity();
+            orderItem.setItemId(item);
+            orderItem.setOrderId(saveOrder);
+            orderItem.setQuantity(itemQuantity.getQuantity());
+            orderItem.setPrice(itemQuantity.getPrice());
+            orderService.saveOrderItem(orderItem);
         }
+
         SaveOrderResponse response = new SaveOrderResponse();
         response.id(saveOrder.getUuid()).status("ORDER SUCCESSFULLY PLACED");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
