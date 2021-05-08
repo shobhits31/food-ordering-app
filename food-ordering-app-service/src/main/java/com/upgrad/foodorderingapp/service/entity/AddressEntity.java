@@ -1,60 +1,57 @@
 package com.upgrad.foodorderingapp.service.entity;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "address")
 @NamedQueries(
         {
-                @NamedQuery(name = "getAllAddress",
-                        query = "select ae from AddressEntity ae")
+                @NamedQuery(name = "addressByUuid",
+                        query = "select a from AddressEntity a where a.uuid = :addressUuid"),
         }
 )
-public class AddressEntity {
+public class AddressEntity implements Serializable {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
     @Column(name = "UUID")
-    @Size(max = 200)
+    @NotNull
     private String uuid;
 
-    @Column(name = "flat_buil_number")
-    @Size(max = 255)
+    @Column(name = "FLAT_BUIL_NUMBER")
     private String flatBuildingName;
 
-    @Column(name = "locality")
-    @Size(max = 255)
+    @Column(name = "LOCALITY")
     private String locality;
 
-    @Column(name = "city")
-    @Size(max = 30)
+    @Column(name = "CITY")
     private String city;
 
-    @Column(name = "pincode")
-    @Size(max = 30)
+    @Column(name = "PINCODE")
     private String pincode;
 
-    @JoinColumn(name = "state_id")
     @ManyToOne
-    private StateEntity  stateId;
+    @JoinColumn(name = "STATE_ID")
+    private StateEntity state;
 
-    @Column(name = "active")
+    @Column(name = "ACTIVE")
     private Integer active;
 
-    public AddressEntity(@Size(max = 200) String uuid, @Size(max = 255) String flatBuildingName, @Size(max = 255) String locality, @Size(max = 30) String city, @Size(max = 30) String pincode, StateEntity stateId) {
-        this.uuid = uuid;
-        this.flatBuildingName = flatBuildingName;
-        this.locality = locality;
-        this.city = city;
-        this.pincode = pincode;
-        this.stateId = stateId;
-    }
-
-    public AddressEntity(){}
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "customer_address",
+            joinColumns = @JoinColumn(name = "ADDRESS_ID"),
+            inverseJoinColumns = @JoinColumn(name = "CUSTOMER_ID"))
+    private List<CustomerEntity> customers;
 
     public Integer getId() {
         return id;
@@ -76,8 +73,8 @@ public class AddressEntity {
         return flatBuildingName;
     }
 
-    public void setFlatBuildingName(String flatBuildingName) {
-        this.flatBuildingName = flatBuildingName;
+    public void setFlatBuildingName(String flatBuildNo) {
+        this.flatBuildingName = flatBuildNo;
     }
 
     public String getLocality() {
@@ -105,11 +102,11 @@ public class AddressEntity {
     }
 
     public StateEntity getState() {
-        return stateId;
+        return state;
     }
 
-    public void setState(StateEntity stateId) {
-        this.stateId = stateId;
+    public void setState(StateEntity state) {
+        this.state = state;
     }
 
     public Integer getActive() {
@@ -120,4 +117,59 @@ public class AddressEntity {
         this.active = active;
     }
 
+    public List<CustomerEntity> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(List<CustomerEntity> customers) {
+        this.customers = customers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AddressEntity that = (AddressEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(uuid, that.uuid)
+                .append(flatBuildingName, that.flatBuildingName)
+                .append(locality, that.locality)
+                .append(city, that.city)
+                .append(pincode, that.pincode)
+                .append(state, that.state)
+                .append(active, that.active)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(uuid)
+                .append(flatBuildingName)
+                .append(locality)
+                .append(city)
+                .append(pincode)
+                .append(state)
+                .append(active)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("uuid", uuid)
+                .append("flatBuildNo", flatBuildingName)
+                .append("locality", locality)
+                .append("city", city)
+                .append("pincode", pincode)
+                .append("state", state)
+                .append("active", active)
+                .toString();
+    }
 }
