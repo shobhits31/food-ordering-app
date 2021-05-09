@@ -145,14 +145,21 @@ public class OrderController {
      * @throws ItemNotFoundException No item by this id exist
      */
     @RequestMapping(method = RequestMethod.POST, path ="/order", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SaveOrderResponse> saveOrder(@RequestHeader("authorization") final String authorization, @RequestBody SaveOrderRequest saveOrderRequest) throws AuthorizationFailedException, AddressNotFoundException, CouponNotFoundException, RestaurantNotFoundException, PaymentMethodNotFoundException, ItemNotFoundException {
+    public ResponseEntity<SaveOrderResponse> saveOrder(@RequestHeader("authorization") final String authorization, @RequestBody(required = false) SaveOrderRequest saveOrderRequest) throws AuthorizationFailedException, AddressNotFoundException, CouponNotFoundException, RestaurantNotFoundException, PaymentMethodNotFoundException, ItemNotFoundException {
         String accessToken = FoodAppUtil.getAccessToken(authorization);
         CustomerEntity loggedInCustomer = customerService.getCustomer(accessToken);
 
-        CouponEntity coupon = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
-        PaymentEntity payment = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
-        AddressEntity address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
-        RestaurantEntity restaurant = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
+        CouponEntity coupon = null;
+        PaymentEntity payment;
+        AddressEntity address;
+        RestaurantEntity restaurant;
+        if (saveOrderRequest.getCouponId() != null) {
+            coupon = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
+        }
+        payment = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
+        address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
+        restaurant = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
+
 
         OrderEntity order = new OrderEntity();
         order.setUuid(UUID.randomUUID().toString());

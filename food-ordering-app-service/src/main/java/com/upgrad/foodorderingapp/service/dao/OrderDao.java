@@ -26,13 +26,7 @@ public class OrderDao {
      */
     public CouponEntity getCouponByCouponName(String couponName) {
         try {
-            List<CouponEntity> couponEntityList = entityManager.createNamedQuery("couponByCouponName", CouponEntity.class).setParameter("couponName", couponName).getResultList();
-            if(couponEntityList != null && !couponEntityList.isEmpty()) {
-                return couponEntityList.get(0);
-            }
-            else {
-                return null;
-            }
+            return entityManager.createNamedQuery("couponByCouponName", CouponEntity.class).setParameter("couponName", couponName).getSingleResult();
         }
         catch(NoResultException nre) {
             return null;

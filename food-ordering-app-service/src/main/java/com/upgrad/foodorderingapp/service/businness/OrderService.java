@@ -33,7 +33,7 @@ public class OrderService {
      */
     public CouponEntity getCouponByCouponName(String couponName) throws CouponNotFoundException {
         if(FoodAppUtil.isEmptyField(couponName)) {
-            throw new CouponNotFoundException(CPF_002.getCode(), CPF_002.getDefaultMessage());
+            throw new CouponNotFoundException(CPF_002.getCode(), "Coupon name field should not be empty");
         }
         CouponEntity couponEntity = orderDao.getCouponByCouponName(couponName);
 
