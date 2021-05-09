@@ -149,8 +149,8 @@ public class OrderController {
         CustomerEntity loggedInCustomer = customerService.getCustomer(accessToken);
 
         CouponEntity coupon = orderService.getCouponByCouponId(saveOrderRequest.getCouponId().toString());
-        AddressEntity address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
         PaymentEntity payment = paymentService.getPaymentByUUID(saveOrderRequest.getPaymentId().toString());
+        AddressEntity address = addressService.getAddressByUUID(saveOrderRequest.getAddressId(), loggedInCustomer);
         RestaurantEntity restaurant = restaurantService.restaurantByUUID(saveOrderRequest.getRestaurantId().toString());
 
         OrderEntity order = new OrderEntity();

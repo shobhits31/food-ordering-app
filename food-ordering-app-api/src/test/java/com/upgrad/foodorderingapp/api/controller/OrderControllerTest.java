@@ -172,7 +172,7 @@ public class OrderControllerTest {
         verify(mockOrderService, times(0)).saveOrder(any());
         verify(mockOrderService, times(0)).saveOrderItem(any());
     }
-/*
+
     //This test case passes when you have handled the exception of trying to save an order while the payment id you gave
     // for making the payment does not exist in the database.
     @Test
@@ -200,8 +200,8 @@ public class OrderControllerTest {
         verify(mockOrderService, times(1)).getCouponByCouponId(anyString());
         verify(mockOrderService, times(0)).saveOrder(any());
         verify(mockOrderService, times(0)).saveOrderItem(any());
-    }*/
-/*
+    }
+
     //This test case passes when you have handled the exception of trying to save an order while the address id you
     // gave to deliver the order does not exist in the database.
     @Test
@@ -235,8 +235,8 @@ public class OrderControllerTest {
         verify(mockOrderService, times(1)).getCouponByCouponId(anyString());
         verify(mockOrderService, times(0)).saveOrder(any());
         verify(mockOrderService, times(0)).saveOrderItem(any());
-    }*/
-/*
+    }
+
     //This test case passes when you have handled the exception of trying to save an order while the address if you
     // have given to deliver the order belongs to a different customer.
     @Test
@@ -270,7 +270,7 @@ public class OrderControllerTest {
         verify(mockOrderService, times(1)).getCouponByCouponId(anyString());
         verify(mockOrderService, times(0)).saveOrder(any());
         verify(mockOrderService, times(0)).saveOrderItem(any());
-    }*/
+    }
 
     //This test case passes when you have handled the exception of trying to save an order while the restaurant id
     // you gave does not exist in the database.

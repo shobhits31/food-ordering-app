@@ -108,10 +108,26 @@ public class RestExceptionHandler {
                     .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
         }
 
-
+        /**
+         * @param excp      - RestaurantNotFoundException
+         * @param request   - WebRequest
+         * @return
+         */
         @ExceptionHandler(RestaurantNotFoundException.class)
         public ResponseEntity<ErrorResponse> categoryNotFoundException(
                 final RestaurantNotFoundException excp, final WebRequest request) {
+            return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                    .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+        }
+
+        /**
+         * @param excp      - PaymentMethodNotFoundException
+         * @param request   - WebRequest
+         * @return
+         */
+        @ExceptionHandler(PaymentMethodNotFoundException.class)
+        public ResponseEntity<ErrorResponse> paymentMethodNotFoundException(
+                final PaymentMethodNotFoundException excp, final WebRequest request) {
             return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                     .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
         }
