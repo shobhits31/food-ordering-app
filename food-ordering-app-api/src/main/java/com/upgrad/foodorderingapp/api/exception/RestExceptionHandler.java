@@ -131,4 +131,17 @@ public class RestExceptionHandler {
             return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
                     .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
         }
+
+        @ExceptionHandler(InvalidRatingException.class)
+        public ResponseEntity<ErrorResponse> ratingNotFoundException(final InvalidRatingException excp, final WebRequest request) {
+            return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                    .message(excp.getErrorMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(ItemNotFoundException.class)
+        public ResponseEntity<ErrorResponse> itemMethodNotFoundException(
+                final ItemNotFoundException excp, final WebRequest request) {
+            return new ResponseEntity<ErrorResponse>(new ErrorResponse().code(excp.getCode())
+                    .message(excp.getErrorMessage()), HttpStatus.NOT_FOUND);
+        }
 }

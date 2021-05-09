@@ -53,7 +53,7 @@ public class OrderController {
      * @throws CouponNotFoundException No coupon by this name or coupon not found
      */
     @RequestMapping(method = RequestMethod.GET, path = "/order/coupon/{coupon_name}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<OrderListCoupon> couponByCouponName(@RequestHeader("authorization") final String authorization, @PathVariable("coupon_name") final String couponName) throws AuthorizationFailedException, CouponNotFoundException {
+    public ResponseEntity<OrderListCoupon> couponByCouponName(@RequestHeader("authorization") final String authorization, @PathVariable(name = "coupon_name", required = false) final String couponName) throws AuthorizationFailedException, CouponNotFoundException {
         String accessToken = FoodAppUtil.getAccessToken(authorization);
         customerService.getCustomer(accessToken);
 
@@ -99,7 +99,7 @@ public class OrderController {
                 orderList.customer(customer);
 
                 OrderListAddress address = new OrderListAddress();
-                address.id(UUID.fromString(pastOrder.getAddress().getUuid())).flatBuildingName(pastOrder.getAddress().toString()).locality(pastOrder.getAddress().toString()).pincode(pastOrder.getAddress().toString());
+                address.id(UUID.fromString(pastOrder.getAddress().getUuid())).flatBuildingName(pastOrder.getAddress().getFlatBuildingName()).locality(pastOrder.getAddress().getLocality()).city(pastOrder.getAddress().getCity()).pincode(pastOrder.getAddress().getPincode());
 
                 OrderListAddressState addressState = new OrderListAddressState();
                 addressState.id(UUID.fromString(pastOrder.getAddress().getState().getUuid())).stateName(pastOrder.getAddress().getState().getStateName());
