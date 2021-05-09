@@ -113,7 +113,7 @@ public class OrderController {
                         ItemQuantityResponse itemQuantityResponse = new ItemQuantityResponse();
                         itemQuantityResponse.quantity(orderItem.getQuantity()).price(orderItem.getPrice());
                         ItemQuantityResponseItem itemQuantityResponseItem = new ItemQuantityResponseItem();
-                        itemQuantityResponseItem.id(UUID.fromString(orderItem.getItemId().getUuid())).itemName(orderItem.getItemId().getItemName()).itemPrice(orderItem.getPrice());
+                        itemQuantityResponseItem.id(UUID.fromString(orderItem.getItemId().getUuid())).itemName(orderItem.getItemId().getItemName()).itemPrice(orderItem.getPrice()).type(ItemQuantityResponseItem.TypeEnum.fromValue(orderItem.getItemId().getType().toString()));
                         itemQuantityResponse.item(itemQuantityResponseItem);
                         orderList.addItemQuantitiesItem(itemQuantityResponse);
                     });
