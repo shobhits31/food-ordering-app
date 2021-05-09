@@ -2,6 +2,7 @@ package com.upgrad.foodorderingapp.api.controller;
 
 import com.upgrad.foodorderingapp.api.model.*;
 import com.upgrad.foodorderingapp.service.businness.*;
+import com.upgrad.foodorderingapp.service.common.Constants;
 import com.upgrad.foodorderingapp.service.common.FoodAppUtil;
 import com.upgrad.foodorderingapp.service.entity.*;
 import com.upgrad.foodorderingapp.service.exception.*;
@@ -177,7 +178,7 @@ public class OrderController {
         }
 
         SaveOrderResponse response = new SaveOrderResponse();
-        response.id(saveOrder.getUuid()).status("ORDER SUCCESSFULLY PLACED");
+        response.id(saveOrder.getUuid()).status(Constants.ORDER_PLACED_MESSAGE);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

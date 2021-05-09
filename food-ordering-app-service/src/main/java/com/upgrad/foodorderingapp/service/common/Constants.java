@@ -7,6 +7,7 @@ public class Constants {
     public static final String TOKEN_ISSUER = "https://FoodOrderingApp.io";
     public static final String LOGIN_MESSAGE = "LOGGED IN SUCCESSFULLY";
     public static final String LOGOUT_MESSAGE = "LOGGED OUT SUCCESSFULLY";
+    public static final String ORDER_PLACED_MESSAGE = "ORDER SUCCESSFULLY PLACED";
     public static final String CUSTOMER_REGISTRATION_MESSAGE = "CUSTOMER SUCCESSFULLY REGISTERED";
     public static final String DELETE_ADDRESS_MESSAGE = "ADDRESS DELETED SUCCESSFULLY";
     public static final String ADDRESS_REGISTRATION_MESSAGE = "ADDRESS SUCCESSFULLY REGISTERED";
