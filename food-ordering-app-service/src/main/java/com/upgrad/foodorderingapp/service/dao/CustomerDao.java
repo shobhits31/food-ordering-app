@@ -17,7 +17,7 @@ public class CustomerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public CustomerEntity createUser(CustomerEntity customerEntity) {
+    public CustomerEntity createCustomer(CustomerEntity customerEntity) {
         log.info("create a new customer in the database");
         entityManager.persist(customerEntity);
         log.info("customer successfully created");
@@ -72,5 +72,16 @@ public class CustomerDao {
      */
     public void updateCustomerAuth(final CustomerAuthEntity customerAuthEntity) {
         entityManager.merge(customerAuthEntity);
+    }
+
+    /**
+     * Method to update CustomerEntity
+     *
+     * @param customerEntity
+     * @return
+     */
+    public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
+        CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
+        return mergedCustomerEntity;
     }
 }
